@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      
   workflow_dispatch:
     inputs:
       run_install:
@@ -13,6 +12,10 @@ on:
         default: false
       run_health:
         description: Run health check?
+        type: boolean
+        default: true
+      run_deploy:
+        description: Run deployment?
         type: boolean
         default: true
 
@@ -36,6 +39,27 @@ jobs:
     if: |
       always() &&
       (needs.install.result == 'success' || needs.install.result == 'skipped')
+    uses: ./.github/workflows/test_fleet.yml
+    permissions:
+      id-token: write
+      contents: read
+
+  deploy:
+    needs: health-before
+    if: |
+      always() &&
+      (inputs.run_deploy == true || inputs.run_deploy == '') &&
+      (needs.health-before.result == 'success' || needs.health-before.result == 'skipped')
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      id-token: write
+      contents: read
+
+  health-after:
+    needs: deploy
+    if: |
+      always() &&
+      needs.deploy.result == 'success'
     uses: ./.github/workflows/test_fleet.yml
     permissions:
       id-token: write
