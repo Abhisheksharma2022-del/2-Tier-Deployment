@@ -1,0 +1,36 @@
+name: Test Fleet
+
+on:
+  workflow_dispatch
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
+          aws-region: us-east-1
+
+      - name: Print Private IPs
+        run: |
+          CMD_ID=$(aws ssm send-command \
+            --targets "key=tag:App,Values=flask" \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{"commands":["hostname -I"]}' \
+            --query 'Commands.CommandId' \
+            --output text
+          )
+
+          sleep 30
+
+          aws ssm list-command-invocations \
+            --command-id "$CMD_ID" \
+            --details \
+            --query "CommandInvocations[*].{Instance:InstanceId,IP:CommandPlugins[0].Output}" \
+            --output table
