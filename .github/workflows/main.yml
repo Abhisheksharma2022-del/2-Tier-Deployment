@@ -41,11 +41,3 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
-  # deploy:          ← commented out
-  #   needs: health-before
-  #   uses: ./.github/workflows/deploy.yml
-
-  # health-after:    ← commented out
-  #   needs: deploy
-  #   uses: ./.github/workflows/test_fleet.yml
