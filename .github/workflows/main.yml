@@ -1,0 +1,59 @@
+name: Main Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      
+  workflow_dispatch:
+    inputs:
+      run_install:
+        description: Install Docker + AWS CLI?
+        type: boolean
+        default: false
+      run_health:
+        description: Run health check?
+        type: boolean
+        default: true
+      run_deploy:
+        description: Run deployment?
+        type: boolean
+        default: true
+
+jobs:
+  install:
+    if: ${{ inputs.run_install == true }}
+    uses: ./.github/workflows/install_tools.yml
+    permissions:
+      id-token: write
+      contents: read
+
+  health-before:
+    needs: install
+    if: |
+      always() &&
+      (needs.install.result == 'success' || needs.install.result == 'skipped')
+    uses: ./.github/workflows/health_check.yml
+    permissions:
+      id-token: write
+      contents: read
+
+  deploy:
+    needs: health-before
+    if: |
+      always() &&
+      (needs.health-before.result == 'success' || needs.health-before.result == 'skipped')
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      id-token: write
+      contents: read
+
+  health-after:
+    needs: deploy
+    if: |
+      always() &&
+      needs.deploy.result == 'success'
+    uses: ./.github/workflows/health_check.yml
+    permissions:
+      id-token: write
+      contents: read

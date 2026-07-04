@@ -1,0 +1,54 @@
+name: Install Tools
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
+          aws-region: us-east-1
+
+      - name: Install Docker + AWS CLI
+        id: install
+        run: |
+          CMD_ID=$(aws ssm send-command \
+            --targets "Key=tag:App,Values=flask" \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{"commands":[
+              "apt-get update -y",
+              "apt-get install -y unzip curl docker.io",
+              "systemctl enable docker",
+              "systemctl start docker",
+              "curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip",
+              "unzip -o awscliv2.zip",
+              "./aws/install --update",
+              "docker --version",
+              "aws --version"
+            ]}' \
+            --query 'Command.CommandId' --output text)
+          echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
+
+      - name: Wait + Verify
+        run: |
+          sleep 90
+          aws ssm list-command-invocations \
+            --command-id "${{ steps.install.outputs.cmd_id }}" \
+            --details \
+            --query "CommandInvocations[*].{Instance:InstanceId,Status:Status,Output:CommandPlugins[0].Output}" \
+            --output table
+
+          FAILED=$(aws ssm list-command-invocations \
+            --command-id "${{ steps.install.outputs.cmd_id }}" \
+            --query "length(CommandInvocations[?Status=='Failed'])" \
+            --output text)
+
+          [ "$FAILED" -gt 0 ] && echo "::error::Failed on $FAILED instance(s)!" && exit 1
+          echo "✅ Docker + AWS CLI installed on all fleet!"
