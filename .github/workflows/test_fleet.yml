@@ -1,6 +1,6 @@
-name : Test Workflow
+name: Test Workflow
 
-on: 
+on:
   push:
     branches:
       - main
@@ -12,26 +12,30 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
           aws-region: us-east-1
 
-      - name: Print Private IPs
+      - name: Print Private IPs + ENV Variables
         run: |
           CMD_ID=$(aws ssm send-command \
             --targets "Key=tag:App,Values=flask" \
             --document-name "AWS-RunShellScript" \
-            --parameters '{"commands":["hostname -I"]}' \
-            --query 'Command.CommandId' --output text
-          )
+            --parameters '{"commands":[
+              "echo === HOST: $(hostname) ===",
+              "echo === Private IP ===",
+              "hostname -I",
+              "echo === SSM ENV Variables ===",
+              "aws ssm get-parameters-by-path --path /application/banking --with-decryption --region us-east-1 --query \"Parameters[*].{Name:Name,Value:Value}\" --output table"
+            ]}' \
+            --query 'Command.CommandId' --output text)
 
           sleep 30
 
           aws ssm list-command-invocations \
             --command-id "$CMD_ID" \
             --details \
-            --query "CommandInvocations[*].{Instance:InstanceId,IP:CommandPlugins[0].Output}" \
+            --query "CommandInvocations[*].{Instance:InstanceId,Status:Status,Output:CommandPlugins[0].Output}" \
             --output table
