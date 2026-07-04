@@ -22,7 +22,7 @@ jobs:
       - name: Print Private IPs
         run: |
           CMD_ID=$(aws ssm send-command \
-            --targets "key=tag:App,Values=flask" \
+            --targets "Key=tag:App,Values=flask" \
             --document-name "AWS-RunShellScript" \
             --parameters '{"commands":["hostname -I"]}' \
             --query 'Commands.CommandId' \
