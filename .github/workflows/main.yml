@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '2-Tier-Deployment/Banking-app/**'
+      
   workflow_dispatch:
     inputs:
       run_install:
