@@ -25,8 +25,7 @@ jobs:
             --targets "Key=tag:App,Values=flask" \
             --document-name "AWS-RunShellScript" \
             --parameters '{"commands":["hostname -I"]}' \
-            --query 'Command.CommandId' \
-            --output text
+            --query 'Command.CommandId' --output text
           )
 
           sleep 30
