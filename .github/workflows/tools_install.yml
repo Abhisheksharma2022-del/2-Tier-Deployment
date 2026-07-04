@@ -1,7 +1,7 @@
 name: Install Tools
 
 on:
-  workflow_dispatch:
+  workflow_call:
 
 permissions:
   id-token: write
