@@ -16,39 +16,49 @@ jobs:
           role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
           aws-region: us-east-1
 
-      - name: Install Docker + AWS CLI
+      - name: Install Docker + AWS CLI on fleet
         id: install
         run: |
           CMD_ID=$(aws ssm send-command \
             --targets "Key=tag:App,Values=flask" \
             --document-name "AWS-RunShellScript" \
             --parameters '{"commands":[
-              "apt-get update -y",
-              "apt-get install -y unzip curl docker.io",
-              "systemctl enable docker",
-              "systemctl start docker",
-              "curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip",
-              "unzip -o awscliv2.zip",
-              "./aws/install --update",
-              "docker --version",
-              "aws --version"
+              "export DEBIAN_FRONTEND=noninteractive",
+              "apt-get update -qq 2>/dev/null",
+              "apt-get install -y -qq unzip curl docker.io 2>/dev/null",
+              "systemctl enable docker --quiet 2>/dev/null",
+              "systemctl start docker 2>/dev/null",
+              "curl -sS https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip",
+              "unzip -oq /tmp/awscliv2.zip -d /tmp 2>/dev/null",
+              "/tmp/aws/install --update 2>/dev/null",
+              "rm -rf /tmp/awscliv2.zip /tmp/aws",
+              "echo Docker: $(docker --version)",
+              "echo AWSCLI: $(aws --version)"
             ]}' \
-            --query 'Command.CommandId' --output text)
+            --query 'Command.CommandId' \
+            --output text \
+            --region us-east-1)
           echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
 
       - name: Wait + Verify
         run: |
           sleep 90
+
           aws ssm list-command-invocations \
             --command-id "${{ steps.install.outputs.cmd_id }}" \
             --details \
             --query "CommandInvocations[*].{Instance:InstanceId,Status:Status,Output:CommandPlugins[0].Output}" \
-            --output table
+            --output table \
+            --region us-east-1
 
           FAILED=$(aws ssm list-command-invocations \
             --command-id "${{ steps.install.outputs.cmd_id }}" \
             --query "length(CommandInvocations[?Status=='Failed'])" \
-            --output text)
+            --output text \
+            --region us-east-1)
 
-          [ "$FAILED" -gt 0 ] && echo "::error::Failed on $FAILED instance(s)!" && exit 1
+          [ "$FAILED" -gt 0 ] && \
+            echo "::error::Install failed on $FAILED instance(s)!" && \
+            exit 1
+
           echo "✅ Docker + AWS CLI installed on all fleet!"
