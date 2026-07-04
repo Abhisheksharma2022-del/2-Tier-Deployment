@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Open Account — SimpleBank{% endblock %}
+
+{% block content %}
+
+<div style="margin: -2rem -1.5rem 0;"
+     class="flex min-h-[calc(100vh-62px)] relative overflow-hidden">
+
+  <!-- glow blobs -->
+  <div class="absolute -top-36 -left-36 w-[600px] h-[600px] bg-[radial-gradient(ellipse,rgba(99,65,240,0.13),transparent_65%)] pointer-events-none z-0"></div>
+  <div class="absolute -bottom-24 -right-24 w-[400px] h-[400px] bg-[radial-gradient(ellipse,rgba(124,90,245,0.1),transparent_65%)] pointer-events-none z-0"></div>
+
+  <!-- ── LEFT — FORM ── -->
+  <div class="flex-1 flex items-center justify-center px-16 py-12 relative z-10">
+    <div class="w-full max-w-[420px]">
+
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="inline-flex items-center gap-2 bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.3)] text-[#c4b5fd] text-[11px] font-semibold px-3.5 py-1.5 rounded-full uppercase tracking-wide mb-5">
+          <i class="ti ti-rocket text-[12px]"></i> New Account
+        </div>
+        <h3 class="text-[26px] font-bold text-[#f0eeff] tracking-tight mb-1.5">Open a bank account</h3>
+        <p class="text-[13.5px] text-[#5e5a7a]">Takes under 3 minutes. Zero fees to get started.</p>
+      </div>
+
+      <form method="POST">
+
+        <!-- Account Type selector -->
+        <div class="mb-5">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-3">Account Type</label>
+          <div class="grid grid-cols-3 gap-2">
+            {% for type, icon, desc in [
+              ("Savings",  "ti-piggy-bank",  "Best for daily use"),
+              ("Current",  "ti-building",    "For businesses"),
+              ("Fixed",    "ti-lock",        "Higher interest")
+            ] %}
+            <label class="cursor-pointer">
+              <input type="radio" name="account_type" value="{{ type }}" class="hidden peer" {% if loop.first %}checked{% endif %}>
+              <div class="peer-checked:border-[rgba(139,92,246,0.6)] peer-checked:bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.15)] rounded-[12px] p-3 text-center hover:border-[rgba(139,92,246,0.35)] hover:bg-[rgba(139,92,246,0.06)] transition-all duration-200">
+                <i class="ti {{ icon }} text-[#a78bfa] text-[20px] block mb-1.5"></i>
+                <p class="text-[12px] font-semibold text-[#c4b5fd] mb-0.5">{{ type }}</p>
+                <p class="text-[10px] text-[#4a4668]">{{ desc }}</p>
+              </div>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Name -->
+        <div class="mb-3.5">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Full Name</label>
+          <div class="relative">
+            <i class="ti ti-user absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+            <input type="text" name="name" placeholder="Rahul Sharma" required autocomplete="name"
+              class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-4 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                     hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3.5">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Email Address</label>
+          <div class="relative">
+            <i class="ti ti-mail absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+            <input type="email" name="email" placeholder="rahul@example.com" required autocomplete="email"
+              class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-4 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                     hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+          </div>
+        </div>
+
+        <!-- Mobile -->
+        <div class="mb-3.5">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Mobile Number</label>
+          <div class="relative">
+            <i class="ti ti-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+            <input type="tel" name="mobile" placeholder="+91 98765 43210" required autocomplete="tel"
+              class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-4 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                     hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+          </div>
+        </div>
+
+        <!-- Initial Balance -->
+        <div class="mb-5">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Initial Deposit</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[14px] font-semibold text-[#4a4668] pointer-events-none">₹</span>
+            <input type="number" name="balance" step="0.01" min="0" placeholder="0.00" required
+              class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-8 pr-4 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                     hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+          </div>
+          <!-- Quick amount pills -->
+          <div class="flex gap-2 mt-2.5">
+            {% for amt in ["1,000", "5,000", "10,000", "25,000"] %}
+            <button type="button"
+              onclick="document.querySelector('[name=balance]').value='{{ amt.replace(',','') }}'"
+              class="flex-1 text-[11px] font-medium text-[#7c5af5] bg-[rgba(139,92,246,0.08)] border border-[rgba(139,92,246,0.2)] rounded-lg py-1.5 hover:bg-[rgba(139,92,246,0.15)] hover:border-[rgba(139,92,246,0.4)] transition-all cursor-pointer">
+              ₹{{ amt }}
+            </button>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit"
+          class="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-[#6341f0] to-[#7c5af5] text-white text-[14px] font-semibold py-3.5 rounded-[11px] border-none cursor-pointer shadow-[0_0_24px_rgba(99,65,240,0.4)] hover:shadow-[0_0_36px_rgba(99,65,240,0.6)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
+          <i class="ti ti-circle-check text-[16px]"></i> Create Account
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ── RIGHT — INFO PANEL ── -->
+  <div class="flex-[0_0_44%] flex flex-col justify-center px-16 py-16 border-l border-[rgba(139,92,246,0.12)] relative z-10">
+
+    <p class="text-[11px] font-bold text-[#7c5af5] uppercase tracking-[1px] mb-3">What you get</p>
+    <h2 class="text-[30px] font-bold text-[#f0eeff] leading-[1.15] tracking-[-1px] mb-3">
+      Your account,<br>
+      <span class="bg-gradient-to-br from-[#a78bfa] to-[#6341f0] bg-clip-text text-transparent">ready instantly</span>
+    </h2>
+    <p class="text-[14px] text-[#5e5a7a] leading-relaxed mb-9 max-w-[320px]">
+      Your account number and details will be generated the moment you submit. No waiting, no branch visits.
+    </p>
+
+    <!-- Perks -->
+    <div class="flex flex-col gap-4 mb-9">
+      {% set perks = [
+        ("ti-id-badge",     "Instant account number",  "Generated immediately upon submission."),
+        ("ti-credit-card",  "Virtual debit card",      "Ready to use online within seconds."),
+        ("ti-send",         "UPI ID activated",        "Start sending & receiving money right away."),
+        ("ti-chart-bar",    "Live dashboard access",   "Track balance, transactions & insights."),
+        ("ti-headset",      "24/7 support included",   "Real humans, not bots — always available."),
+      ] %}
+      {% for icon, title, desc in perks %}
+      <div class="flex items-center gap-3">
+        <div class="w-[36px] h-[36px] rounded-[10px] bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] flex items-center justify-center flex-shrink-0">
+          <i class="ti {{ icon }} text-[#a78bfa] text-[16px]"></i>
+        </div>
+        <div>
+          <p class="text-[13px] font-semibold text-[#c4b5fd]">{{ title }}</p>
+          <p class="text-[11.5px] text-[#4a4668]">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Notice card -->
+    <div class="bg-[rgba(99,65,240,0.08)] border border-[rgba(139,92,246,0.25)] rounded-[14px] p-5">
+      <div class="flex items-start gap-3">
+        <i class="ti ti-info-circle text-[#a78bfa] text-[18px] flex-shrink-0 mt-0.5"></i>
+        <div>
+          <p class="text-[13px] font-semibold text-[#c4b5fd] mb-1.5">KYC required within 7 days</p>
+          <p class="text-[12px] text-[#5e5a7a] leading-relaxed">
+            Your account is instantly active, but to unlock full features and unlimited transfers, complete Aadhaar / PAN eKYC within 7 days. Takes under 2 minutes.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

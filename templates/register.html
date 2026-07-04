@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% block title %}Register — SimpleBank{% endblock %}
+
+{% block content %}
+
+<div style="margin: -2rem -1.5rem 0;"
+     class="flex min-h-[calc(100vh-62px)] relative overflow-hidden">
+
+  <!-- glow blobs -->
+  <div class="absolute -top-36 -right-36 w-[600px] h-[600px] bg-[radial-gradient(ellipse,rgba(99,65,240,0.13),transparent_65%)] pointer-events-none z-0"></div>
+  <div class="absolute -bottom-24 -left-24 w-[400px] h-[400px] bg-[radial-gradient(ellipse,rgba(124,90,245,0.1),transparent_65%)] pointer-events-none z-0"></div>
+
+  <!-- ── LEFT — REGISTER FORM ── -->
+  <div class="flex-1 flex items-center justify-center px-16 py-10 relative z-10">
+    <div class="w-full max-w-[420px]">
+
+      <!-- Header -->
+      <div class="mb-6">
+        <h3 class="text-[26px] font-bold text-[#f0eeff] tracking-tight mb-1.5">Create your account</h3>
+        <p class="text-[13.5px] text-[#5e5a7a]">Already have one? <a href="/login" class="text-[#7c5af5] font-semibold hover:text-[#c4b5fd] transition-colors">Sign in instead →</a></p>
+      </div>
+
+      <!-- Error alert -->
+      {% if error %}
+      <div class="flex items-center gap-2.5 bg-[rgba(248,113,113,0.08)] border border-[rgba(248,113,113,0.25)] rounded-[10px] px-4 py-3 mb-5 text-[13px] text-[#f87171]">
+        <i class="ti ti-alert-circle text-[16px] flex-shrink-0"></i>
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST">
+
+        <!-- First + Last Name -->
+        <div class="grid grid-cols-2 gap-3 mb-0">
+          <div class="mb-3.5">
+            <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">First Name</label>
+            <div class="relative">
+              <i class="ti ti-user absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+              <input type="text" name="first_name" placeholder="Rahul" required
+                class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-4 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                       hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+            </div>
+          </div>
+          <div class="mb-3.5">
+            <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Last Name</label>
+            <div class="relative">
+              <i class="ti ti-user absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+              <input type="text" name="last_name" placeholder="Sharma"
+                class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-4 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                       hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+            </div>
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="mb-3.5">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Username</label>
+          <div class="relative">
+            <i class="ti ti-at absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+            <input type="text" name="username" placeholder="rahul_sharma" required autocomplete="username"
+              class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-4 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                     hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3.5">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Email Address</label>
+          <div class="relative">
+            <i class="ti ti-mail absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+            <input type="email" name="email" placeholder="rahul@example.com" required autocomplete="email"
+              class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-4 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                     hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="mb-3.5">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Phone Number</label>
+          <div class="relative">
+            <i class="ti ti-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+            <input type="tel" name="phone" placeholder="+91 98765 43210"
+              class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-4 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                     hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3.5">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Password</label>
+          <div class="relative">
+            <i class="ti ti-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+            <input type="password" name="password" id="pw1" placeholder="Min. 8 characters" required
+                   autocomplete="new-password" oninput="checkStrength(this.value)"
+              class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-11 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                     hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+            <button type="button" onclick="togglePw('pw1','ic1')"
+              class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[#4a4668] hover:text-[#a78bfa] transition-colors">
+              <i class="ti ti-eye text-[16px]" id="ic1"></i>
+            </button>
+          </div>
+          <!-- Strength meter -->
+          <div class="mt-2">
+            <div class="flex gap-1 mb-1.5">
+              {% for i in range(4) %}
+              <div id="s{{ i+1 }}" class="flex-1 h-[3px] rounded-full bg-[rgba(139,92,246,0.12)] transition-all duration-300"></div>
+              {% endfor %}
+            </div>
+            <span class="text-[10.5px] text-[#4a4668] font-medium" id="s-label">Enter a password</span>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-4">
+          <label class="block text-[11.5px] font-bold text-[#7c5af5] uppercase tracking-[0.6px] mb-2">Confirm Password</label>
+          <div class="relative">
+            <i class="ti ti-lock-check absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-[#4a4668] pointer-events-none"></i>
+            <input type="password" name="confirm_password" id="pw2" placeholder="Repeat your password" required
+                   autocomplete="new-password"
+              class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.2)] rounded-[11px] py-3 pl-10 pr-11 text-[14px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+                     hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.6)] focus:bg-[rgba(139,92,246,0.06)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+            <button type="button" onclick="togglePw('pw2','ic2')"
+              class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[#4a4668] hover:text-[#a78bfa] transition-colors">
+              <i class="ti ti-eye text-[16px]" id="ic2"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Terms -->
+        <div class="flex items-start gap-2.5 mb-5">
+          <input type="checkbox" name="terms" required
+            class="w-[15px] h-[15px] rounded accent-[#6341f0] cursor-pointer mt-0.5 flex-shrink-0">
+          <span class="text-[12.5px] text-[#5e5a7a] leading-relaxed">
+            I agree to SimpleBank's
+            <a href="#" class="text-[#7c5af5] font-medium hover:text-[#c4b5fd]">Terms of Service</a> and
+            <a href="#" class="text-[#7c5af5] font-medium hover:text-[#c4b5fd]">Privacy Policy</a>.
+            I confirm I am 18+ and a resident of India.
+          </span>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit"
+          class="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-[#6341f0] to-[#7c5af5] text-white text-[14px] font-semibold py-3.5 rounded-[11px] border-none cursor-pointer shadow-[0_0_24px_rgba(99,65,240,0.4)] hover:shadow-[0_0_36px_rgba(99,65,240,0.6)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 mb-5">
+          <i class="ti ti-user-plus text-[16px]"></i> Create Free Account
+        </button>
+
+      </form>
+
+      <!-- Or -->
+      <div class="flex items-center gap-3 mb-4">
+        <div class="flex-1 h-px bg-[rgba(139,92,246,0.12)]"></div>
+        <span class="text-[11px] text-[#3d3a52] font-medium">OR SIGN UP WITH</span>
+        <div class="flex-1 h-px bg-[rgba(139,92,246,0.12)]"></div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5 mb-5">
+        <a href="#" class="flex items-center justify-center gap-2 bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.15)] rounded-[10px] py-2.5 text-[12.5px] font-medium text-[#9d97b8] hover:bg-[rgba(139,92,246,0.08)] hover:border-[rgba(139,92,246,0.3)] hover:text-[#c4b5fd] transition-all">
+          <i class="ti ti-brand-google text-[16px]"></i> Google
+        </a>
+        <a href="#" class="flex items-center justify-center gap-2 bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.15)] rounded-[10px] py-2.5 text-[12.5px] font-medium text-[#9d97b8] hover:bg-[rgba(139,92,246,0.08)] hover:border-[rgba(139,92,246,0.3)] hover:text-[#c4b5fd] transition-all">
+          <i class="ti ti-brand-github text-[16px]"></i> GitHub
+        </a>
+      </div>
+
+      <p class="text-center text-[13px] text-[#4a4668]">
+        Already have an account? <a href="/login" class="text-[#7c5af5] font-semibold hover:text-[#c4b5fd] transition-colors">Sign in</a>
+      </p>
+
+    </div>
+  </div>
+
+  <!-- ── RIGHT — PERKS PANEL ── -->
+  <div class="flex-[0_0_44%] flex flex-col justify-center px-16 py-16 border-l border-[rgba(139,92,246,0.12)] relative z-10">
+
+    <p class="text-[11px] font-bold text-[#7c5af5] uppercase tracking-[1px] mb-3">Why SimpleBank?</p>
+    <h2 class="text-[32px] font-bold text-[#f0eeff] leading-[1.15] tracking-[-1.2px] mb-3">
+      Banking that<br>works for
+      <span class="bg-gradient-to-br from-[#a78bfa] to-[#6341f0] bg-clip-text text-transparent">you</span>
+    </h2>
+    <p class="text-[14px] text-[#5e5a7a] leading-relaxed mb-9 max-w-[320px]">
+      Join 18,000+ customers who've ditched their old bank for something smarter, faster, and completely free.
+    </p>
+
+    <div class="flex flex-col gap-4 mb-9">
+      {% set perks = [
+        ("ti-clock-bolt", "Open in 3 minutes",    "Aadhaar / PAN eKYC — no branch, no paperwork."),
+        ("ti-coins",       "Truly zero fees",      "No minimum balance, no maintenance, no fine print."),
+        ("ti-shield-lock", "Fort-knox security",   "256-bit AES + biometric 2FA + real-time fraud detection."),
+        ("ti-chart-line",  "AI-powered insights",  "Auto-categorized spend, bill predictions, saving tips."),
+      ] %}
+      {% for icon, title, desc in perks %}
+      <div class="flex items-start gap-3">
+        <div class="w-[38px] h-[38px] rounded-[10px] bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] flex items-center justify-center flex-shrink-0 mt-0.5">
+          <i class="ti {{ icon }} text-[#a78bfa] text-[17px]"></i>
+        </div>
+        <div>
+          <p class="text-[13.5px] font-semibold text-[#c4b5fd] mb-1">{{ title }}</p>
+          <p class="text-[12px] text-[#4a4668] leading-relaxed">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Social proof card -->
+    <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.15)] rounded-[14px] p-5">
+      <div class="text-[#a78bfa] text-[13px] tracking-[2px] mb-2">★★★★★</div>
+      <p class="text-[13px] text-[#6b6484] leading-relaxed italic mb-4">
+        "Opened my account in literally 3 minutes during my lunch break. The dashboard is clean, transfers are instant, and I haven't paid a single fee in 4 months."
+      </p>
+      <div class="flex items-center gap-2.5">
+        <div class="w-[30px] h-[30px] rounded-full bg-gradient-to-br from-[#6341f0] to-[#a78bfa] flex items-center justify-center text-white text-[10px] font-bold">PJ</div>
+        <div>
+          <p class="text-[12.5px] font-semibold text-[#c4b5fd]">Priya Joshi</p>
+          <p class="text-[10.5px] text-[#4a4668]">UX Designer, Bangalore</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function togglePw(id, ic) {
+  const pw = document.getElementById(id);
+  const i  = document.getElementById(ic);
+  if (pw.type === 'password') { pw.type = 'text';     i.className = 'ti ti-eye-off text-[16px]'; }
+  else                        { pw.type = 'password'; i.className = 'ti ti-eye text-[16px]';     }
+}
+
+function checkStrength(v) {
+  const bars  = ['s1','s2','s3','s4'].map(id => document.getElementById(id));
+  const label = document.getElementById('s-label');
+  let score = 0;
+  if (v.length >= 8)          score++;
+  if (/[A-Z]/.test(v))        score++;
+  if (/[0-9]/.test(v))        score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+
+  const cfg = [
+    { text: 'Enter a password', color: '#4a4668',  cls: ''  },
+    { text: 'Weak',             color: '#f87171',  cls: 'bg-[#f87171]' },
+    { text: 'Fair',             color: '#fbbf24',  cls: 'bg-[#fbbf24]' },
+    { text: 'Good',             color: '#4ade80',  cls: 'bg-[#4ade80]' },
+    { text: 'Strong 💪',        color: '#4ade80',  cls: 'bg-[#4ade80]' },
+  ][score];
+
+  bars.forEach((b, i) => {
+    b.className = 'flex-1 h-[3px] rounded-full transition-all duration-300 ' +
+                  (i < score ? cfg.cls : 'bg-[rgba(139,92,246,0.12)]');
+  });
+  label.textContent  = cfg.text;
+  label.style.color  = cfg.color;
+}
+</script>
+
+{% endblock %}

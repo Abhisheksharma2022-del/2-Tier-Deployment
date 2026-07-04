@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SimpleBank{% endblock %}
+
+{% block content %}
+
+<div style="margin: -2rem -1.5rem 0; padding: 2rem 2.5rem 3rem;">
+
+<!-- Page header -->
+<div class="flex items-center justify-between mb-8">
+  <div>
+    <p class="text-[11px] font-bold text-[#7c5af5] uppercase tracking-[1px] mb-1">Overview</p>
+    <h2 class="text-[26px] font-bold text-[#f0eeff] tracking-tight">All Bank Accounts</h2>
+  </div>
+  <a href="/open-account"
+     class="inline-flex items-center gap-2 bg-gradient-to-br from-[#6341f0] to-[#7c5af5] text-white text-[13px] font-semibold px-5 py-2.5 rounded-[10px] shadow-[0_0_20px_rgba(99,65,240,0.35)] hover:shadow-[0_0_30px_rgba(99,65,240,0.55)] hover:-translate-y-0.5 transition-all duration-200">
+    <i class="ti ti-plus text-[15px]"></i> Open New Account
+  </a>
+</div>
+
+<!-- Summary stat cards -->
+<div class="grid grid-cols-4 gap-3 mb-8">
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.15)] rounded-[14px] p-5 hover:bg-[rgba(139,92,246,0.07)] hover:border-[rgba(139,92,246,0.3)] hover:-translate-y-0.5 transition-all duration-200">
+    <p class="text-[10.5px] font-bold text-[#7c5af5] uppercase tracking-wide mb-2">Total Accounts</p>
+    <p class="text-[28px] font-bold text-[#c4b5fd] tracking-tight">{{ accounts | length }}</p>
+  </div>
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.15)] rounded-[14px] p-5 hover:bg-[rgba(139,92,246,0.07)] hover:border-[rgba(139,92,246,0.3)] hover:-translate-y-0.5 transition-all duration-200">
+    <p class="text-[10.5px] font-bold text-[#7c5af5] uppercase tracking-wide mb-2">Total Balance</p>
+    <p class="text-[28px] font-bold text-[#4ade80] tracking-tight">₹{{ "{:,.0f}".format(accounts | sum(attribute='balance')) }}</p>
+  </div>
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.15)] rounded-[14px] p-5 hover:bg-[rgba(139,92,246,0.07)] hover:border-[rgba(139,92,246,0.3)] hover:-translate-y-0.5 transition-all duration-200">
+    <p class="text-[10.5px] font-bold text-[#7c5af5] uppercase tracking-wide mb-2">Avg Balance</p>
+    <p class="text-[28px] font-bold text-[#c4b5fd] tracking-tight">
+      {% if accounts %}
+        ₹{{ "{:,.0f}".format((accounts | sum(attribute='balance')) / (accounts | length)) }}
+      {% else %}₹0{% endif %}
+    </p>
+  </div>
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.15)] rounded-[14px] p-5 hover:bg-[rgba(139,92,246,0.07)] hover:border-[rgba(139,92,246,0.3)] hover:-translate-y-0.5 transition-all duration-200">
+    <p class="text-[10.5px] font-bold text-[#7c5af5] uppercase tracking-wide mb-2">Active Today</p>
+    <p class="text-[28px] font-bold text-[#c4b5fd] tracking-tight">{{ accounts | length }}</p>
+  </div>
+</div>
+
+<!-- Search + filter bar -->
+<div class="flex items-center gap-3 mb-4">
+  <div class="relative flex-1 max-w-[360px]">
+    <i class="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[15px] text-[#4a4668] pointer-events-none"></i>
+    <input type="text" id="searchInput" placeholder="Search by name, email, account no..."
+      oninput="filterTable()"
+      class="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.18)] rounded-[10px] py-2.5 pl-9 pr-4 text-[13px] text-[#e2dff0] placeholder-[#3d3a52] outline-none transition-all
+             hover:border-[rgba(139,92,246,0.35)] focus:border-[rgba(139,92,246,0.55)] focus:bg-[rgba(139,92,246,0.05)] focus:shadow-[0_0_0_3px_rgba(99,65,240,0.1)]">
+  </div>
+  <div class="text-[12px] text-[#4a4668] font-medium ml-auto" id="row-count">
+    Showing {{ accounts | length }} accounts
+  </div>
+</div>
+
+<!-- Table — full width -->
+<div class="bg-[rgba(255,255,255,0.02)] border border-[rgba(139,92,246,0.15)] rounded-[16px] overflow-hidden mb-6 w-full">
+  <table class="w-full" id="accTable">
+    <thead>
+      <tr class="border-b border-[rgba(139,92,246,0.15)]">
+        {% for col in ["ID", "Name", "Email", "Mobile", "Account No.", "Balance", "Created"] %}
+        <th class="text-left text-[10.5px] font-bold text-[#7c5af5] uppercase tracking-[0.7px] px-5 py-4">{{ col }}</th>
+        {% endfor %}
+        <th class="text-left text-[10.5px] font-bold text-[#7c5af5] uppercase tracking-[0.7px] px-5 py-4">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      {% for acc in accounts %}
+      <tr class="acc-row border-b border-[rgba(139,92,246,0.07)] hover:bg-[rgba(139,92,246,0.05)] transition-colors duration-150 last:border-0">
+
+        <td class="px-5 py-4">
+          <span class="text-[12px] font-mono text-[#5e5a7a]">#{{ acc.id }}</span>
+        </td>
+
+        <td class="px-5 py-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#6341f0] to-[#a78bfa] flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0">
+              {{ acc.name[0] | upper }}
+            </div>
+            <span class="text-[13px] font-medium text-[#e2dff0]">{{ acc.name }}</span>
+          </div>
+        </td>
+
+        <td class="px-5 py-4">
+          <span class="text-[13px] text-[#7c7494]">{{ acc.email }}</span>
+        </td>
+
+        <td class="px-5 py-4">
+          <span class="text-[13px] text-[#7c7494]">{{ acc.mobile }}</span>
+        </td>
+
+        <td class="px-5 py-4">
+          <span class="text-[12px] font-mono text-[#c4b5fd] bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.2)] px-2.5 py-1 rounded-lg">
+            {{ acc.acc_number }}
+          </span>
+        </td>
+
+        <td class="px-5 py-4">
+          <span class="text-[13px] font-semibold text-[#4ade80]">₹{{ "{:,.2f}".format(acc.balance) }}</span>
+        </td>
+
+        <td class="px-5 py-4">
+          <span class="text-[12px] text-[#4a4668]">{{ acc.created_at }}</span>
+        </td>
+
+        <td class="px-5 py-4">
+          <div class="flex items-center gap-1.5">
+            <a href=""
+               class="inline-flex items-center gap-1 text-[11.5px] font-medium text-[#7c5af5] bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.2)] px-2.5 py-1.5 rounded-lg hover:bg-[rgba(139,92,246,0.2)] hover:border-[rgba(139,92,246,0.4)] transition-all">
+              <i class="ti ti-eye text-[13px]"></i> View
+            </a>
+            <a href=""
+               class="inline-flex items-center gap-1 text-[11.5px] font-medium text-[#4ade80] bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.2)] px-2.5 py-1.5 rounded-lg hover:bg-[rgba(74,222,128,0.15)] hover:border-[rgba(74,222,128,0.35)] transition-all">
+              <i class="ti ti-arrow-down text-[13px]"></i> Deposit
+            </a>
+            <a href=""
+               class="inline-flex items-center gap-1 text-[11.5px] font-medium text-[#fbbf24] bg-[rgba(251,191,36,0.08)] border border-[rgba(251,191,36,0.2)] px-2.5 py-1.5 rounded-lg hover:bg-[rgba(251,191,36,0.15)] hover:border-[rgba(251,191,36,0.35)] transition-all">
+              <i class="ti ti-arrow-up text-[13px]"></i> Withdraw
+            </a>
+          </div>
+        </td>
+
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" class="px-5 py-16 text-center">
+          <i class="ti ti-inbox text-[#3d3a52] text-[40px] block mb-3"></i>
+          <p class="text-[14px] font-medium text-[#4a4668] mb-1">No accounts yet</p>
+          <p class="text-[12.5px] text-[#3d3a52] mb-5">Open your first account to get started.</p>
+          <a href="/open-account"
+             class="inline-flex items-center gap-2 bg-gradient-to-br from-[#6341f0] to-[#7c5af5] text-white text-[13px] font-semibold px-5 py-2.5 rounded-[10px]">
+            <i class="ti ti-plus text-[14px]"></i> Open Account
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+</div>
+
+<script>
+function filterTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const rows = document.querySelectorAll('.acc-row');
+  let visible = 0;
+  rows.forEach(row => {
+    const match = row.innerText.toLowerCase().includes(q);
+    row.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  document.getElementById('row-count').textContent = `Showing ${visible} account${visible !== 1 ? 's' : ''}`;
+}
+</script>
+
+{% endblock %}

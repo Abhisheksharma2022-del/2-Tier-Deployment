@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% block title %}Home — SimpleBank{% endblock %}
+{% block content %}
+
+<!-- HERO — TWO COLUMN -->
+<div class="grid grid-cols-2 gap-1 items-center pb-12 relative ml-20 mr-20">
+
+  <!-- Purple glow bg -->
+  <div class="absolute -top-10 -left-24 w-[500px] h-[500px] bg-[radial-gradient(ellipse,rgba(99,65,240,0.15),transparent_70%)] pointer-events-none"></div>
+
+  <!-- LEFT TEXT -->
+  <div class="relative z-10">
+    <div class="inline-flex items-center gap-2 bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.3)] text-[#c4b5fd] text-[11px] font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide mb-6">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#a78bfa] animate-pulse"></span>
+      Now live across India
+    </div>
+
+    <h1 class="text-[48px] font-bold text-[#f0eeff] leading-[1.1] tracking-[-2px] mb-5">
+      The bank that puts<br>
+      <span class="bg-gradient-to-br from-[#a78bfa] to-[#6341f0] bg-clip-text text-transparent">you in control</span>
+    </h1>
+    <p class="text-[15.5px] text-[#6b6484] leading-relaxed mb-8 max-w-[420px]">
+      Open an account in 3 minutes. Instant transfers, zero fees, AI-powered insights — built for people who mean business.
+    </p>
+
+    <div class="flex items-center gap-3 flex-wrap mb-7">
+      <a href="/register" class="inline-flex items-center gap-2 bg-gradient-to-br from-[#6341f0] to-[#7c5af5] text-white text-[13.5px] font-semibold px-6 py-3 rounded-[11px] shadow-[0_0_24px_rgba(99,65,240,0.45)] hover:shadow-[0_0_36px_rgba(99,65,240,0.6)] hover:-translate-y-0.5 transition-all duration-200">
+        <i class="ti ti-rocket text-[14px]"></i> Open Free Account
+      </a>
+      <a href="#demo" class="inline-flex items-center gap-2 bg-[rgba(255,255,255,0.04)] text-[#c4b5fd] text-[13.5px] font-medium px-5 py-3 rounded-[11px] border border-[rgba(139,92,246,0.25)] hover:bg-[rgba(139,92,246,0.1)] hover:border-[rgba(139,92,246,0.4)] transition-all duration-200">
+        <i class="ti ti-player-play text-[14px]"></i> Watch Demo
+      </a>
+    </div>
+
+    <!-- Trust badges -->
+    <div class="flex items-center gap-4 flex-wrap">
+      <div class="flex items-center gap-1.5 text-[11.5px] text-[#4a4668] font-medium"><i class="ti ti-shield-check text-[#5e4ab7] text-[13px]"></i> RBI Regulated</div>
+      <div class="flex items-center gap-1.5 text-[11.5px] text-[#4a4668] font-medium"><i class="ti ti-lock text-[#5e4ab7] text-[13px]"></i> 256-bit SSL</div>
+      <div class="flex items-center gap-1.5 text-[11.5px] text-[#4a4668] font-medium"><i class="ti ti-award text-[#5e4ab7] text-[13px]"></i> DICGC Insured</div>
+    </div>
+  </div>
+
+  <!-- RIGHT — DASHBOARD MOCKUP -->
+  <div class="relative z-10">
+    <div class="bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.18)] rounded-[20px] p-5 shadow-[0_0_60px_rgba(99,65,240,0.12),0_20px_40px_rgba(0,0,0,0.4)]">
+
+      <!-- Card header -->
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-[13px] font-semibold text-[#f0eeff]">My Dashboard</p>
+          <p class="text-[11px] text-[#5e5a7a]">Savings Account · ****4821</p>
+        </div>
+        <span class="text-[10px] font-semibold text-[#4ade80] bg-[rgba(74,222,128,0.12)] border border-[rgba(74,222,128,0.25)] px-2.5 py-1 rounded-full">● Live</span>
+      </div>
+
+      <!-- Balance -->
+      <div class="bg-[linear-gradient(135deg,rgba(99,65,240,0.25),rgba(124,90,245,0.12))] border border-[rgba(139,92,246,0.25)] rounded-[14px] p-4 mb-4 relative overflow-hidden">
+        <div class="absolute -top-8 -right-8 w-24 h-24 bg-[radial-gradient(circle,rgba(99,65,240,0.3),transparent)] pointer-events-none"></div>
+        <p class="text-[10px] font-semibold text-[#7c5af5] uppercase tracking-wide mb-1">Total Balance</p>
+        <p class="text-[30px] font-bold text-[#f0eeff] tracking-tight">₹XXXXX.90</p>
+        <p class="text-[11px] text-[#5e5a7a] mb-2">Available for transfer · Updated just now</p>
+        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#4ade80] bg-[rgba(74,222,128,0.1)] px-2 py-0.5 rounded-full">
+          <i class="ti ti-trending-up text-[11px]"></i> +₹0,000 this month
+        </span>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="grid grid-cols-4 gap-2 mb-4">
+        {% for icon, label in [("ti-send","Send"),("ti-download","Receive"),("ti-credit-card","Pay Bill"),("ti-chart-pie","Invest")] %}
+        <div class="bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.12)] rounded-[11px] py-2.5 text-center hover:bg-[rgba(139,92,246,0.1)] hover:border-[rgba(139,92,246,0.3)] transition-all cursor-pointer">
+          <i class="ti {{ icon }} text-[#7c5af5] text-[16px] block mb-1"></i>
+          <span class="text-[10px] text-[#5e5a7a] font-medium">{{ label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Transactions -->
+      <div class="flex items-center justify-between mb-2.5">
+        <span class="text-[10px] font-semibold text-[#7c5af5] uppercase tracking-wide">Recent Transactions</span>
+        <a href="#" class="text-[10px] text-[#5e5a7a] hover:text-[#c4b5fd]">View all →</a>
+      </div>
+      {% set txns = [
+        ("ti-shopping-bag","rgba(99,65,240,0.15)","#a78bfa","Zomato Order","Today, 1:42 PM","−₹40","dr"),
+        ("ti-building-bank","rgba(74,222,128,0.1)","#4ade80","Credit","Yesterday, 9:00 AM","+₹6,000","cr"),
+        ("ti-bolt","rgba(251,191,36,0.1)","#fbbf24","Electricity Bill","12 Jun, 11:30 AM","−₹240","dr")
+      ] %}
+      {% for icon, ibg, iclr, name, date, amt, type in txns %}
+      <div class="flex items-center justify-between py-2 border-b border-[rgba(139,92,246,0.07)] last:border-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-[9px] flex items-center justify-center flex-shrink-0" style="background:{{ ibg }}">
+            <i class="ti {{ icon }} text-[13px]" style="color:{{ iclr }}"></i>
+          </div>
+          <div>
+            <p class="text-[12.5px] font-medium text-[#c4b5fd]">{{ name }}</p>
+            <p class="text-[10px] text-[#4a4668]">{{ date }}</p>
+          </div>
+        </div>
+        <span class="text-[13px] font-semibold {% if type == 'cr' %}text-[#4ade80]{% else %}text-[#f87171]{% endif %}">{{ amt }}</span>
+      </div>
+      {% endfor %}
+
+      <!-- Mini bar chart -->
+      <div class="mt-3">
+        <p class="text-[10px] font-semibold text-[#7c5af5] uppercase tracking-wide mb-2">Monthly Spending</p>
+        <div class="flex items-end gap-1.5 h-12">
+          {% for h, active in [("55%",False),("70%",False),("45%",False),("80%",False),("60%",False),("90%",True)] %}
+          <div class="flex-1 rounded-t-[4px] {% if active %}bg-gradient-to-t from-[#6341f0] to-[#7c5af5]{% else %}bg-[rgba(139,92,246,0.25)]{% endif %}" style="height:{{ h }}"></div>
+          {% endfor %}
+        </div>
+        <div class="flex gap-1.5 mt-1">
+          {% for m, active in [("Jan",False),("Feb",False),("Mar",False),("Apr",False),("May",False),("Jun",True)] %}
+          <div class="flex-1 text-center text-[9px] {% if active %}text-[#7c5af5] font-semibold{% else %}text-[#3d3a52]{% endif %}">{{ m }}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- rest of sections same as before (stats, features, steps, pricing, testimonials, cta, trust) -->
+
+<!-- STATS -->
+<div class="grid grid-cols-4 gap-3 mb-14">
+  {% set stats = [("₹2.4M+","Deposits Managed"),("18K+","Active Customers"),("99.9%","Uptime SLA"),("<2s","Avg Transfer Speed")] %}
+  {% for num, label in stats %}
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.15)] rounded-2xl p-5 text-center hover:bg-[rgba(139,92,246,0.08)] hover:border-[rgba(139,92,246,0.35)] hover:-translate-y-1 transition-all duration-200">
+    <div class="text-[28px] font-bold text-[#c4b5fd] tracking-tight">{{ num }}</div>
+    <div class="text-[11px] text-[#5e5a7a] font-medium mt-1 uppercase tracking-wide">{{ label }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- FEATURES -->
+<div class="text-center mb-9">
+  <p class="text-[11px] font-semibold text-[#7c5af5] uppercase tracking-[1.2px] mb-2">Core Features</p>
+  <h2 class="text-[30px] font-bold text-[#f0eeff] tracking-tight mb-2">Everything in one place</h2>
+  <p class="text-[14px] text-[#5e5a7a]">Built from the ground up for speed, security, and simplicity.</p>
+</div>
+<div class="grid grid-cols-3 gap-3 mb-14">
+  {% set features = [
+    ("ti-zap","Instant Transfers","Send money in under 2 seconds via UPI, IMPS, or NEFT — 24/7."),
+    ("ti-shield-lock","Bank-Grade Security","256-bit AES encryption, biometric 2FA, and real-time fraud detection."),
+    ("ti-chart-line","AI Spend Insights","Auto-categorize spending, predict bills, get monthly saving tips."),
+    ("ti-coins","Zero Hidden Fees","No minimum balance. No maintenance charges. No fine print."),
+    ("ti-device-mobile","Mobile First","Native apps for Android & iOS. Works smoothly even on 2G."),
+    ("ti-headset","24/7 Live Support","No bots, no queues. Real humans via chat, email, and phone.")
+  ] %}
+  {% for icon, title, desc in features %}
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.12)] rounded-2xl p-6 hover:bg-[rgba(139,92,246,0.07)] hover:border-[rgba(139,92,246,0.3)] hover:-translate-y-1 transition-all duration-200">
+    <div class="w-[44px] h-[44px] rounded-[12px] bg-[rgba(139,92,246,0.15)] border border-[rgba(139,92,246,0.25)] flex items-center justify-center mb-4">
+      <i class="ti {{ icon }} text-[#a78bfa] text-[20px]"></i>
+    </div>
+    <div class="text-[14px] font-semibold text-[#e2dff0] mb-2">{{ title }}</div>
+    <div class="text-[12.5px] text-[#5e5a7a] leading-relaxed">{{ desc }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="text-center mb-9">
+  <p class="text-[11px] font-semibold text-[#7c5af5] uppercase tracking-[1.2px] mb-2">How it works</p>
+  <h2 class="text-[30px] font-bold text-[#f0eeff] tracking-tight">Up and running in 3 steps</h2>
+</div>
+<div class="grid grid-cols-3 gap-3 mb-14">
+  {% set steps = [
+    ("1","Create Your Account","Sign up with email and verify via Aadhaar or PAN — takes under 3 minutes."),
+    ("2","Add Money","Fund via UPI, NEFT, or debit card. Instant credit, no delays."),
+    ("3","Start Banking","Send, receive, invest, and track — all from one clean dashboard.")
+  ] %}
+  {% for num, title, desc in steps %}
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.12)] rounded-2xl p-7 text-center">
+    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#6341f0] to-[#a78bfa] flex items-center justify-center text-white text-[14px] font-bold mx-auto mb-4 shadow-[0_0_20px_rgba(99,65,240,0.4)]">{{ num }}</div>
+    <div class="text-[14px] font-semibold text-[#e2dff0] mb-2">{{ title }}</div>
+    <div class="text-[12.5px] text-[#5e5a7a] leading-relaxed">{{ desc }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- PRICING -->
+<div class="text-center mb-9">
+  <p class="text-[11px] font-semibold text-[#7c5af5] uppercase tracking-[1.2px] mb-2">Pricing</p>
+  <h2 class="text-[30px] font-bold text-[#f0eeff] tracking-tight mb-2">Simple, honest pricing</h2>
+  <p class="text-[14px] text-[#5e5a7a]">No surprise charges. Ever.</p>
+</div>
+<div class="grid grid-cols-3 gap-3 mb-14">
+
+  <!-- Starter -->
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.12)] rounded-[18px] p-7">
+    <p class="text-[12px] font-semibold text-[#7c5af5] uppercase tracking-wide mb-2">Starter</p>
+    <p class="text-[36px] font-bold text-[#f0eeff] tracking-tight">₹0 <span class="text-[14px] font-normal text-[#5e5a7a]">/ month</span></p>
+    <p class="text-[12px] text-[#5e5a7a] mt-1 mb-5">Perfect for personal use.</p>
+    <div class="h-px bg-[rgba(139,92,246,0.15)] mb-5"></div>
+    {% for f in ["1 savings account","10 free transfers/month","Basic spend insights","Email support"] %}
+    <div class="flex items-center gap-2 text-[12.5px] text-[#9d97b8] mb-2.5"><i class="ti ti-check text-[#7c5af5] text-[14px]"></i> {{ f }}</div>
+    {% endfor %}
+    <a href="/register" class="block text-center text-[13px] font-semibold text-[#a78bfa] border border-[rgba(139,92,246,0.3)] rounded-[10px] py-2.5 mt-5 hover:bg-[rgba(139,92,246,0.1)] hover:border-[rgba(139,92,246,0.5)] transition-all">Get Started Free</a>
+  </div>
+
+  <!-- Pro -->
+  <div class="bg-[rgba(99,65,240,0.12)] border border-[rgba(139,92,246,0.4)] rounded-[18px] p-7 relative">
+    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#6341f0] to-[#a78bfa] text-white text-[10px] font-bold px-4 py-1 rounded-full uppercase tracking-wide">Most Popular</div>
+    <p class="text-[12px] font-semibold text-[#7c5af5] uppercase tracking-wide mb-2">Pro</p>
+    <p class="text-[36px] font-bold text-[#f0eeff] tracking-tight">₹199 <span class="text-[14px] font-normal text-[#5e5a7a]">/ month</span></p>
+    <p class="text-[12px] text-[#5e5a7a] mt-1 mb-5">For power users.</p>
+    <div class="h-px bg-[rgba(139,92,246,0.15)] mb-5"></div>
+    {% for f in ["3 accounts (savings + FD)","Unlimited transfers","AI-powered insights","Priority 24/7 support","Virtual debit card"] %}
+    <div class="flex items-center gap-2 text-[12.5px] text-[#9d97b8] mb-2.5"><i class="ti ti-check text-[#7c5af5] text-[14px]"></i> {{ f }}</div>
+    {% endfor %}
+    <a href="/register" class="block text-center text-[13px] font-semibold text-white bg-gradient-to-br from-[#6341f0] to-[#7c5af5] rounded-[10px] py-2.5 mt-5 shadow-[0_0_20px_rgba(99,65,240,0.35)] hover:shadow-[0_0_30px_rgba(99,65,240,0.5)] hover:-translate-y-0.5 transition-all">Start Pro Trial</a>
+  </div>
+
+  <!-- Business -->
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.12)] rounded-[18px] p-7">
+    <p class="text-[12px] font-semibold text-[#7c5af5] uppercase tracking-wide mb-2">Business</p>
+    <p class="text-[36px] font-bold text-[#f0eeff] tracking-tight">₹799 <span class="text-[14px] font-normal text-[#5e5a7a]">/ month</span></p>
+    <p class="text-[12px] text-[#5e5a7a] mt-1 mb-5">For startups scaling fast.</p>
+    <div class="h-px bg-[rgba(139,92,246,0.15)] mb-5"></div>
+    {% for f in ["Unlimited accounts","Bulk payments & payroll","GST-ready invoicing","Dedicated account manager","API access"] %}
+    <div class="flex items-center gap-2 text-[12.5px] text-[#9d97b8] mb-2.5"><i class="ti ti-check text-[#7c5af5] text-[14px]"></i> {{ f }}</div>
+    {% endfor %}
+    <a href="/contact" class="block text-center text-[13px] font-semibold text-[#a78bfa] border border-[rgba(139,92,246,0.3)] rounded-[10px] py-2.5 mt-5 hover:bg-[rgba(139,92,246,0.1)] transition-all">Contact Sales</a>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div class="text-center mb-9">
+  <p class="text-[11px] font-semibold text-[#7c5af5] uppercase tracking-[1.2px] mb-2">Testimonials</p>
+  <h2 class="text-[30px] font-bold text-[#f0eeff] tracking-tight">Loved by thousands</h2>
+</div>
+<div class="grid grid-cols-3 gap-3 mb-14">
+  {% set reviews = [
+    ("RK","Rahul Kapoor","Freelancer, Pune","Switched from HDFC last month. The dashboard alone is 10x better. Transfers are genuinely instant."),
+    ("PJ","Priya Joshi","UX Designer, Bangalore","Zero fees is real — 3 months in, not a single hidden charge. Finally a bank that doesn't charge me for breathing."),
+    ("AS","Arjun Sharma","Startup Founder, Delhi","Running payroll for 12 people via Business plan. Saves us 4 hours every month.")
+  ] %}
+  {% for init, name, role, quote in reviews %}
+  <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.12)] rounded-2xl p-6 hover:border-[rgba(139,92,246,0.28)] hover:-translate-y-1 transition-all duration-200">
+    <div class="text-[#a78bfa] tracking-[2px] text-[13px] mb-3">★★★★★</div>
+    <p class="text-[13px] text-[#7c7494] leading-relaxed italic mb-4">"{{ quote }}"</p>
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#6341f0] to-[#a78bfa] flex items-center justify-center text-white text-[11px] font-bold">{{ init }}</div>
+      <div>
+        <div class="text-[13px] font-semibold text-[#c4b5fd]">{{ name }}</div>
+        <div class="text-[11px] text-[#5e5a7a]">{{ role }}</div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- CTA BANNER -->
+<div class="bg-[linear-gradient(135deg,rgba(99,65,240,0.2),rgba(124,90,245,0.1))] border border-[rgba(139,92,246,0.3)] rounded-[20px] p-12 text-center mb-12">
+  <h2 class="text-[32px] font-bold text-[#f0eeff] tracking-tight mb-3">Ready to bank smarter?</h2>
+  <p class="text-[15px] text-[#7c7494] mb-8">Join 18,000+ customers who've already made the switch. Takes 3 minutes.</p>
+  <a href="/register" class="inline-flex items-center gap-2 bg-gradient-to-br from-[#6341f0] to-[#7c5af5] text-white text-[14px] font-semibold px-8 py-3.5 rounded-xl shadow-[0_0_28px_rgba(99,65,240,0.45)] hover:shadow-[0_0_40px_rgba(99,65,240,0.6)] hover:-translate-y-0.5 transition-all duration-200">
+    <i class="ti ti-rocket text-[15px]"></i> Open Your Free Account
+  </a>
+</div>
+
+<!-- TRUST BAR -->
+<div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(139,92,246,0.15)] rounded-2xl px-8 py-5 flex items-center justify-center gap-9 flex-wrap mb-4">
+  {% set trust = [("ti-shield-check","RBI Regulated"),("ti-lock","256-bit SSL"),("ti-award","ISO 27001 Certified"),("ti-building-bank","DICGC Insured"),("ti-users","18K+ Customers")] %}
+  {% for icon, label in trust %}
+  <div class="flex items-center gap-2">
+    <i class="ti {{ icon }} text-[#7c5af5] text-[18px]"></i>
+    <span class="text-[13px] font-medium text-[#9d97b8]">{{ label }}</span>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
