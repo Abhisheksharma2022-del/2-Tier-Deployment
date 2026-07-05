@@ -35,7 +35,7 @@ jobs:
             --parameters '{"commands":[
               "aws s3 cp s3://720800607391-devops-scripts/smoke_test.py /tmp/smoke_test.py",
               "pip3 install pymysql -q 2>/dev/null",
-              "python3 /tmp/smoke_test.py",
+              "python3 /tmp/smoke_test.py || exit 1",
               "rm /tmp/smoke_test.py"
             ]}' \
             --query 'Command.CommandId' \
