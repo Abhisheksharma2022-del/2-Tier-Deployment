@@ -27,7 +27,7 @@ jobs:
               "hostname -I",
               "docker --version 2>/dev/null || echo DOCKER NOT INSTALLED",
               "aws --version 2>/dev/null || echo AWS CLI NOT INSTALLED",
-              "mysql --version 2>/dev/null || echo DOCKER NOT INSTALLED",
+              "mysql --version 2>/dev/null || echo MYSQL NOT INSTALLED",
               "aws ssm get-parameters-by-path --path /application/banking --with-decryption --region us-east-1"
               ]}' \
             --query 'Command.CommandId' --output text \
