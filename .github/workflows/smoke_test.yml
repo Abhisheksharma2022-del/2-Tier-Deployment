@@ -3,6 +3,10 @@ name : Smoke Testing For Infra and Networking
 on:
   workflow_call:
 
+permissions:
+  id-token: write
+  contents: read
+  
 jobs:
   smoke:
     runs-on: ubuntu-latest
