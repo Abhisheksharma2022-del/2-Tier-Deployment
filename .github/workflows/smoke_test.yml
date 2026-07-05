@@ -1,4 +1,4 @@
-name : Smoke Testing For Infra and Networking
+name: Smoke Testing For Infra and Networking
 
 on:
   workflow_call:
@@ -15,39 +15,32 @@ jobs:
         with:
           repository: DEVENDRA-5470/banking-app-2-tier
           ref: main
-        
-      - name: All files
-        run: |
-          ls 
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
           aws-region: us-east-1
 
-      - name: Upload smoke_test.py on AWS
+      - name: Upload smoke_test.py to S3
         run: |
           aws s3 mb s3://720800607391-devops-scripts --region us-east-1 2>/dev/null || true
-          aws s3 cp smoke_test.py \
-          s3://720800607391-devops-scripts/smoke_test.py \
-          --region us-east-1
+          aws s3 cp smoke_test.py s3://720800607391-devops-scripts/smoke_test.py --region us-east-1
 
       - name: Run Smoke Test on Fleet
         id: smoke
         run: |
           CMD_ID=$(aws ssm send-command \
-          --targets "Key=tag:App,Values=flask" \
-          --document-name "AWS-RunShellScript" \
-          --parameters '{"commands":[
-            "aws s3 cp s3://720800607391-devops-scripts/smoke_test.py /tmp/smoke_test.py",
-            "python3 /tmp/smoke_test.py",
-            "rm /tmp/smoke_test.py"
-            ]}'\
-
+            --targets "Key=tag:App,Values=flask" \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{"commands":[
+              "aws s3 cp s3://720800607391-devops-scripts/smoke_test.py /tmp/smoke_test.py",
+              "pip3 install pymysql -q 2>/dev/null",
+              "python3 /tmp/smoke_test.py",
+              "rm /tmp/smoke_test.py"
+            ]}' \
             --query 'Command.CommandId' \
             --output text \
             --region us-east-1)
-
           echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
 
       - name: Show Results
@@ -55,23 +48,19 @@ jobs:
           sleep 30
 
           aws ssm list-command-invocations \
-          --command-id "${{ steps.smoke.outputs.cmd_id }}" \
-          --details \
-          --region us-east-1 \
-          --output text
+            --command-id "${{ steps.smoke.outputs.cmd_id }}" \
+            --details \
+            --region us-east-1 \
+            --output text
 
           FAILED=$(aws ssm list-command-invocations \
-           --command-id "${{ steps.smoke.outputs.cmd_id }}" \
-           --query "length(CommandInvocations[?Status=='Failed'])" \
-           --output text \
-           --region us-east-1
-          )
+            --command-id "${{ steps.smoke.outputs.cmd_id }}" \
+            --query "length(CommandInvocations[?Status=='Failed'])" \
+            --output text \
+            --region us-east-1)
 
           [ "$FAILED" -gt 0 ] && \
-          echo "::error::Smoke Test  $FAILED instances" && \
-          exit 1
+            echo "::error::Smoke test failed on $FAILED instance(s)!" && \
+            exit 1
 
-          echo "Smoke Test Passed ✅"
-          
-
-      
+          echo "✅ Smoke Test Passed!"
