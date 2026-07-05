@@ -57,7 +57,7 @@ jobs:
           aws ssm list-command-invocations \
           --command-id "${{ steps.smoke.outputs.cmd_id }}" \
           --details \
-          --region us-east-1
+          --region us-east-1 \
           --output text
 
           FAILED=$(aws ssm list-command-invocations \
