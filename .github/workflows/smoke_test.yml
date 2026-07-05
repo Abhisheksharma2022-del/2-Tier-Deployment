@@ -39,9 +39,9 @@ jobs:
           --targets "Key=tag:App,Values=flask" \
           --document-name "AWS-RunShellScript" \
           --parameters '{"commands":[
-            "aws s3 cp s3://720800607391-devops-scripts/smoke_test.py /tmpr/smoke_test.py",
-            "python3 /tmpr/smoke_test.py",
-            "rm /tmpr/smoke_test.py"
+            "aws s3 cp s3://720800607391-devops-scripts/smoke_test.py /tmp/smoke_test.py",
+            "python3 /tmp/smoke_test.py",
+            "rm /tmp/smoke_test.py"
             ]}'\
 
             --query 'Command.CommandId' \
