@@ -27,6 +27,7 @@ jobs:
 
       - name: Upload smoke_test.py on AWS
         run: |
+          aws s3 mb s3://720800607391-devops-scripts --region us-east-1 2>/dev/null || true
           aws s3 cp smoke_test.py \
           s3://720800607391-devops-scripts/smoke_test.py \
           --region us-east-1
