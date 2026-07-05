@@ -39,10 +39,11 @@ jobs:
         run: |  
           sleep 20
           aws ssm list-command-invocations \
-            --command-id "${{steps.health.outputs.cmd_id}}" --details \
-            --region us-east-1
+            --command-id "${{steps.health.outputs.cmd_id}}" \
+            --details \
+            --region us-east-1 \
             --query "CommandInvocations[*].{Instance:InstanceId,Status,IP:CommandPlugins[0].Output}" \
-            --output text
+            --output text 
           
           FAILED=$(aws ssm list-command-invocations \
             --command-id "${{steps.health.outputs.cmd_id}}" \ 
