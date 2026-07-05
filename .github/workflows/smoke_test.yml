@@ -42,7 +42,7 @@ jobs:
             "aws s3 cp s3://720800607391-devops-scripts/smoke_test.py /tmpr/smoke_test.py",
             "python3 /tmpr/smoke_test.py",
             "rm /tmpr/smoke_test.py"
-            ]}' \
+            ]}'\
 
             --query 'Command.CommandId' \
             --output text \
