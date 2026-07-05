@@ -1,4 +1,4 @@
-name: Test Fleet
+name: Test Fleet health and Env Variables
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name : Application Deploying On AWS
+name : Buliding and Pushing to AWS ECR
 
 on:
   workflow_dispatch
@@ -9,4 +9,4 @@ jobs:
 
     steps:
       - name : Echo Message
-        run : echo "Application Deployed On AWS successfully ✅"
+        run : echo "Build and push successfully ✅"
