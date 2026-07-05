@@ -1,7 +1,7 @@
 name : Buliding and Pushing to AWS ECR
 
 on:
-  workflow_dispatch:
+   workflow_call:
 
 jobs:
   working-job:
