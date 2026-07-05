@@ -45,7 +45,7 @@ jobs:
             --output text
           
           FAILED=$(aws ssm list-command-invocations \
-            --command-id "${{steps.health.outputs.cmd_id}}" --details \
+            --command-id "${{steps.health.outputs.cmd_id}}" \ 
             --query "length(CommandInvocations[?Status=='Failed'])" \
             --output text \
             --region us-east-1
