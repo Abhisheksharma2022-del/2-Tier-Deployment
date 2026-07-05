@@ -11,7 +11,11 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
           aws-region: us-east-1
-      
+
+      - name: All files
+        run: |
+          ls -la
+
       - name: Upload smoke_test.py on AWS
         run: |
           aws s3 cp smoke_test.py \
