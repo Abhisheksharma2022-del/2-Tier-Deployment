@@ -39,7 +39,6 @@ jobs:
                 "cd /tmp",
                 "aws s3 cp s3://720800607391-devops-scripts/init.py .",
                 "aws s3 cp s3://720800607391-devops-scripts/init.sql .",
-                "pip3 install boto3 pymysql -q",
                 "python3 init.py"
               ]
             }' \
