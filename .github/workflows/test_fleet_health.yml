@@ -36,7 +36,7 @@ jobs:
       
       
       - name: Show Results
-        run:   
+        run: |  
           sleep 20
           aws ssm list-command-invocations \
             --command-id "${{steps.health.outputs.cmd_id}}" --details \
