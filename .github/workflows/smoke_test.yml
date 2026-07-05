@@ -11,7 +11,7 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - uses: action/checkout@v4
+      - uses: actions/checkout@v4
         with:
           repository: DEVENDRA-5470/banking-app-2-tier
           ref: main
@@ -19,7 +19,7 @@ jobs:
       - name: All files
         run: |
           ls -la
-          
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
