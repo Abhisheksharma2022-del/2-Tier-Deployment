@@ -63,4 +63,4 @@ jobs:
             echo "::error::Smoke test failed on $FAILED instance(s)!" && \
             exit 1
 
-          echo "✅ Smoke Test Passed"
+          echo "✅ Smoke Test Passed!"
