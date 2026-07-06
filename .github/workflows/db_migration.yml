@@ -24,8 +24,8 @@ jobs:
       - name: Upload file on S3
         run: |
           aws s3 mb s3://720800607391-devops-scripts --region us-east-1 2>/dev/null || true
-          aws s3 cp init.sql s3://720800607391-devops-scripts/init.sql 
-          aws s3 cp init.py s3://720800607391-devops-scripts/init.py 
+          aws s3 cp init.sql s3://720800607391-devops-scripts/init.sql --region us-east-1
+          aws s3 cp init.py s3://720800607391-devops-scripts/init.py --region us-east-1
           echo "✅ Files Uploaded to bucket.."
 
       - name: Initializing Database on RDS using Ec2
@@ -35,7 +35,6 @@ jobs:
             --targets "Key=tag:App,Values=flask" \
             --document-name "AWS-RunShellScript" \
             --parameters '{"commands":[
-              "aws s3 cp s3://720800607391-devops-scripts/init.sql",  
               "aws s3 cp s3://720800607391-devops-scripts/init.py /tmp/init.py",
               "python3 /tmp/init.py || exit 1",
               "rm /tmp/init.py"

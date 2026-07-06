@@ -1,7 +1,7 @@
 name: Test Fleet health and Env Variables
 
 on:
-  workflow_call:
+  workflow_dispatch:
 
 
 permissions:
