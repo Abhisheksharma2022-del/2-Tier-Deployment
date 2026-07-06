@@ -60,31 +60,50 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "Deploy ${{ env.VERSION }} by ${{ github.actor }}" \
             --parameters '{"commands":[
+              "set -e",
+              "systemctl start docker 2>/dev/null || true",
               "aws ecr get-login-password --region ${{ env.REGION }} | docker login --username AWS --password-stdin 720800607391.dkr.ecr.${{ env.REGION }}.amazonaws.com",
               "mkdir -p /home/ubuntu/app",
               "aws s3 cp ${{ env.S3_BUCKET }}/docker-compose.yml /home/ubuntu/app/docker-compose.yml",
               "docker pull ${{ env.IMAGE }}:${{ env.VERSION }}",
-              "docker stop simplebank || true",
-              "docker rm simplebank || true",
-              "export IMAGE_TAG=${{ env.VERSION }} && cd /home/ubuntu/app && docker compose up -d",
+              "docker stop simplebank 2>/dev/null || true",
+              "docker rm simplebank 2>/dev/null || true",
+              "cd /home/ubuntu/app && IMAGE_TAG=${{ env.VERSION }} docker compose up -d",
               "sleep 5",
-              "docker ps | grep simplebank && echo OK || echo FAILED"
+              "docker ps --filter name=simplebank --format '{{.Status}}' | grep -q Up && echo CONTAINER_RUNNING || (echo CONTAINER_FAILED && exit 1)"
             ]}' \
             --query 'Command.CommandId' \
             --output text \
             --region ${{ env.REGION }})
           echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
 
-      # ---------- VERIFY ----------
-      - name: Verify deployment
+      - name: Verify Deployment
         run: |
-          sleep 40
+          echo "Waiting for deployment..."
 
+          for i in {1..10}; do
+            STATUS=$(aws ssm list-command-invocations \
+              --command-id "${{ steps.deploy.outputs.cmd_id }}" \
+              --query "CommandInvocations[*].Status" \
+              --output text \
+              --region ${{ env.REGION }})
+            echo "[$i] Status: $STATUS"
+            echo "$STATUS" | grep -q "InProgress\|Pending" && sleep 10 || break
+          done
+
+          echo ""
+          echo "============ DEPLOY RESULTS ============"
           aws ssm list-command-invocations \
             --command-id "${{ steps.deploy.outputs.cmd_id }}" \
             --details \
             --region ${{ env.REGION }} \
-            --output text
+            --query "CommandInvocations[*].[InstanceId,Status,CommandPlugins[0].Output]" \
+            --output text | while IFS=$'\t' read -r instance status output; do
+              echo "Instance : $instance"
+              echo "Status   : $status"
+              echo "$output" | tail -5
+              echo "----------------------------------------"
+            done
 
           FAILED=$(aws ssm list-command-invocations \
             --command-id "${{ steps.deploy.outputs.cmd_id }}" \
