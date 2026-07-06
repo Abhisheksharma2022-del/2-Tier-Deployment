@@ -61,6 +61,7 @@ jobs:
             --comment "Deploy ${{ env.VERSION }} by ${{ github.actor }}" \
             --parameters '{"commands":[
               "set -e",
+              "apt-get install -y -qq docker-compose-v2 2>/dev/null",
               "systemctl start docker 2>/dev/null || true",
               "aws ecr get-login-password --region ${{ env.REGION }} | docker login --username AWS --password-stdin 720800607391.dkr.ecr.${{ env.REGION }}.amazonaws.com",
               "mkdir -p /home/ubuntu/app",
@@ -70,7 +71,7 @@ jobs:
               "docker rm simplebank 2>/dev/null || true",
               "cd /home/ubuntu/app && IMAGE_TAG=${{ env.VERSION }} docker compose up -d",
               "sleep 5",
-              "docker ps --filter name=simplebank --format '{{.Status}}' | grep -q Up && echo CONTAINER_RUNNING || (echo CONTAINER_FAILED && exit 1)"
+              "docker ps --filter name=simplebank --format {{.Status}} | grep -q Up && echo CONTAINER_RUNNING || (echo CONTAINER_FAILED && exit 1)"
             ]}' \
             --query 'Command.CommandId' \
             --output text \
