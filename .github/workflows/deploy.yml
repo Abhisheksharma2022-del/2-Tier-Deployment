@@ -35,8 +35,20 @@ jobs:
           720800607391.dkr.ecr.${{ env.REGION }}.amazonaws.com
           echo "Login Successfull to ECR ✅"
 
+      - name: Build and Push image
+        run: |
+          docker build \
+          -t ${{env.IMAGE}}:${{env.VERSION}} \
+          -t ${{env.IMAGE}}:latest \ .
+
+          docker push ${{env.IMAGE}}:${{env.VERSION}}
+          docker push ${{env.IMAGE}}:latest
+          echo "Image Pushed : ${{env.VERSION}} ✅"
+      
+
       - name: Upload Docker-Compose to S3
         run: |
-          aws s3 mb ${{ env.S3_BUCKET }} --region ${{ env.REGION }} 2>/dev/null || true
           aws s3 cp docker-compose.yml ${{ env.S3_BUCKET }}/docker-compose.yml --region ${{ env.REGION }}
           echo "Docker compose Uploaded ✅"
+
+    
