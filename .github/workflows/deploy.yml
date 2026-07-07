@@ -1,10 +1,10 @@
-name: Deploy SimpleBank
+name: Deploy SimpleBank 
 
-on:
-  workflow_call:
+on: 
+ workflow_call: 
 
-permissions:
-  id-token: write
+permissions: 
+  id-token: write 
   contents: read
 
 env:
@@ -12,12 +12,11 @@ env:
   REGION: us-east-2
   ECR: 489741402840.dkr.ecr.us-east-2.amazonaws.com
   IMAGE: 489741402840.dkr.ecr.us-east-2.amazonaws.com/2-tier-deployment
-  S3_BUCKET: s3://489741402840-devops-scripts
+  S3_BUCKET: s3://489741402840-devops-scripts 
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,42 +49,39 @@ jobs:
             --targets "Key=tag:App,Values=flask" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploy ${{ env.VERSION }} by ${{ github.actor }}" \
-            --parameters '{
-              "commands":[
-                "set -e",
-                "aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 489741402840.dkr.ecr.us-east-2.amazonaws.com",
-                "mkdir -p /home/ubuntu/app",
-                "aws s3 cp s3://489741402840-devops-scripts/docker-compose.yml /home/ubuntu/app/docker-compose.yml",
-                "docker pull 489741402840.dkr.ecr.us-east-2.amazonaws.com/2-tier-deployment:v1.0.0",
-                "docker stop simplebank || true",
-                "docker rm simplebank || true",
-                "cd /home/ubuntu/app && IMAGE_TAG=v1.0.0 docker compose up -d"
-              ]
-            }' \
-            --query "Command.CommandId" \
-            --output text)
+            --parameters '{"commands":[
+              "set -e",
+              "aws ecr get-login-password --region ${{ env.REGION }} | docker login --username AWS --password-stdin ${{ env.ECR }}",
+              "mkdir -p /home/ubuntu/app",
+              "aws s3 cp ${{ env.S3_BUCKET }}/docker-compose.yml /home/ubuntu/app/docker-compose.yml",
+              "docker pull ${{ env.IMAGE }}:${{ env.VERSION }}",
+              "docker stop simplebank 2>/dev/null ⠺⠵⠞⠺⠵⠞⠟⠟⠺⠞⠞⠵⠟⠵⠵⠵⠺⠵⠺⠺⠺⠞⠵⠵⠞⠵⠞⠟⠺⠺⠵⠞⠞⠞⠺⠞⠺⠺⠞⠟⠵⠞⠟⠟⠟⠞⠵⠵⠺⠞⠺⠞⠵⠺⠺⠺ true",
+              "cd /home/ubuntu/app && IMAGE_TAG=${{ env.VERSION }} docker compose up -d",
+              "docker ps --filter name=simplebank --format {{.Status}} | grep -q Up && echo CONTAINER_RUNNING ⠵⠵⠺⠞⠟⠺⠟⠺⠺⠞⠵⠟⠺⠞⠟⠟⠵⠞⠺⠺⠟⠵⠟⠵⠟⠞⠺⠞⠞⠟⠵⠺⠟⠵⠞⠵⠞⠞⠞⠟⠵⠵⠺⠵⠵⠟⠟⠞⠺⠺⠵⠺⠵⠺⠟⠞⠵⠟⠟⠟⠟⠞⠞⠟⠟⠞⠞⠞⠺⠺⠞⠞⠵⠵⠺⠺⠟⠺⠞⠟⠵⠺⠞⠞⠟⠵⠞⠞⠞⠟⠟⠺⠺⠺⠵⠵⠟⠟⠵⠺⠵⠵⠞⠟⠟⠟⠟⠞⠺⠟⠟⠵⠟⠟⠞⠵⠟⠞⠺⠞⠺⠞⠟⠵⠵⠵⠺⠞⠺⠺⠞⠞⠵⠺⠺⠞⠞⠺⠵⠞⠞⠵⠞⠺⠺⠵⠺⠵⠵⠺⠞⠟⠟⠺⠵⠟⠞⠟⠞⠟⠺⠞⠟⠵⠟⠞⠵⠟⠵⠵⠺⠺⠵⠞⠞⠟⠺⠞⠟⠞⠟⠟⠟⠞⠵⠵⠵⠺⠞⠵⠵⠞⠺⠵⠺⠟⠵⠟⠞⠵⠵⠟⠵⠵⠞⠞⠟⠟⠞⠺⠺⠟⠵⠺⠵⠞⠺⠵⠞⠟⠵⠞⠺⠟⠟⠵⠞⠺⠺⠵⠞⠵⠟⠞⠵⠵⠵⠞⠞⠞⠟⠞⠞⠺⠵⠟⠺⠵⠺⠵⠵⠞⠵⠵⠟⠺⠟⠵⠞⠟⠵⠵⠺⠵⠵⠟⠵⠵⠟⠟⠟⠵⠺⠺⠞⠟⠺⠺⠞⠺⠟⠟⠟⠺⠺⠟⠟⠵⠟⠞⠟⠟⠟⠺⠞⠺⠟⠺⠵⠵⠟⠟⠺⠵⠺⠵⠺⠵⠵⠟⠵⠞⠞⠺⠵⠺⠵⠵⠵⠟⠵⠵⠵⠺⠵⠺⠺⠵⠟⠟⠵⠺⠞⠟⠟⠟⠞⠞⠺⠞⠟⠟⠵⠟⠞⠺⠞⠟⠺⠵⠺⠵⠵⠟⠞⠺⠞⠞⠟⠞⠞⠞⠺⠵⠟⠞⠺⠺⠺⠟⠟⠞⠵⠺⠵⠞⠵⠵⠞⠞⠟⠵⠵⠺⠺⠺⠟⠞⠺⠟⠟⠺⠺⠺⠺⠞⠟⠞⠞⠵⠟⠞⠵⠵⠺⠟⠺⠵⠺⠺⠺⠵⠟⠞⠞⠟⠞⠞⠟⠺⠟⠟⠺⠵⠺⠟⠟⠞⠞⠟⠺⠞⠵⠺⠞⠟⠺⠵⠵⠺⠟⠟⠵⠞⠵⠞⠺⠺⠞⠞⠺⠞⠺⠵⠺⠵⠞⠞⠞⠞⠵⠵⠟⠟⠵⠟⠵⠟⠺⠟⠺⠟⠵⠟⠟⠺⠵⠟⠺⠟⠟⠵⠵⠺⠞⠵⠞⠵⠺⠞⠟⠞⠺⠞⠺⠟⠵⠵⠺⠺⠞⠵⠺⠟⠟⠟⠟⠵⠵⠵⠞⠵⠟⠟⠺⠞⠞⠵⠟⠞⠞⠵⠵⠵⠵⠞⠺⠞⠟⠟⠵⠞⠵⠞⠵⠞⠵⠞⠵⠺⠞⠺⠺⠵⠺⠵⠺⠺⠞⠞⠵⠟⠵⠺⠞⠟⠟⠵⠺⠞⠟⠺⠞⠵⠞⠞⠵⠺⠺⠞⠟⠵⠞⠺⠞⠺⠺⠟⠟⠺⠵⠺⠵⠵⠟⠞⠟⠟⠺⠞⠞⠺⠞⠟⠵⠺⠺⠵⠞⠺⠺⠵⠟⠞⠵⠞⠟⠺⠺⠟⠞⠟⠟⠞⠺⠟⠺⠺⠞⠟⠵⠺⠟⠞⠺⠞⠞⠺⠺⠺⠞⠺⠞⠟⠟⠟⠟⠵⠵⠞⠵⠟⠺⠵⠵⠟⠞⠞⠟⠞⠞⠺⠵⠟⠵ break
+          done
 
-          echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
+          echo "============ DEPLOY RESULTS ============"
 
-      - name: Wait for deployment
-        run: |
-          aws ssm wait command-executed \
-            --command-id "${{ steps.deploy.outputs.cmd_id }}" \
-            --instance-id $(aws ec2 describe-instances \
-              --filters "Name=tag:App,Values=flask" "Name=instance-state-name,Values=running" \
-              --query "Reservations[0].Instances[0].InstanceId" \
-              --output text \
-              --region ${{ env.REGION }}) \
-            --region ${{ env.REGION }}
-
-      - name: Show Deployment Result
-        run: |
           aws ssm list-command-invocations \
             --command-id "${{ steps.deploy.outputs.cmd_id }}" \
             --details \
             --region ${{ env.REGION }} \
-            --output table
+            --query "CommandInvocations[*].[InstanceId,Status,CommandPlugins[0].Output]" \
+            --output text | while IFS=$'\t' read -r instance status output; do
+              echo "Instance : $instance"
+              echo "Status   : $status"
+              echo "$output" | tail -5
+              echo "----------------------------------------"
+            done
 
-      - name: Deployment Successful
-        run: |
-          echo "Deployment completed successfully ✅"
+          FAILED=$(aws ssm list-command-invocations \
+            --command-id "${{ steps.deploy.outputs.cmd_id }}" \
+            --query "length(CommandInvocations[?Status=='Failed'])" \
+            --output text \
+            --region ${{ env.REGION }})
+
+          [ "$FAILED" -gt 0 ] && \
+            echo "::error::Deploy failed on $FAILED instance(s)!" && \
+            exit 1
+
+          echo "✅ Deploy successful — ${{ env.VERSION }}"
