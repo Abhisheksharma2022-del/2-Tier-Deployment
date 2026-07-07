@@ -39,7 +39,7 @@ jobs:
         run: |
           docker build \
           -t ${{env.IMAGE}}:${{env.VERSION}} \
-          -t ${{env.IMAGE}}:latest \ .
+          -t ${{env.IMAGE}}:latest .\ 
 
           docker push ${{env.IMAGE}}:${{env.VERSION}}
           docker push ${{env.IMAGE}}:latest
