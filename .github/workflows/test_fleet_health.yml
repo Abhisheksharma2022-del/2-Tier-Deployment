@@ -14,9 +14,8 @@ jobs:
     steps:
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
-          aws-region: us-east-1
-
+          role-to-assume: arn:aws:iam::489741402840:role/GitHub-OIDC-Role
+          aws-region: us-east-2
       - name: Fleet Health Checks
         id: health
         run: |
