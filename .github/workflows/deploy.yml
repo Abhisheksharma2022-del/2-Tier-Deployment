@@ -9,7 +9,7 @@ permissions:
 
 env:
   VERSION: v1.0.0
-  REGION: us-east-1
+  REGION: us-east-2
   ECR: 489741402840.dkr.ecr.us-east-2.amazonaws.com
   IMAGE: 489741402840.dkr.ecr.us-east-2.amazonaws.com/2-tier-deployment
   S3_BUCKET: s3://489741402840-devops-scripts 
