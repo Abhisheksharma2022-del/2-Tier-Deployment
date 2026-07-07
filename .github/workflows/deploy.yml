@@ -9,10 +9,10 @@ permissions:
 
 env:
   VERSION: v1
-  REGION: us-east-2
+  REGION: us-east-
   ECR: 489741402840.dkr.ecr.us-east-2.amazonaws.com
   IMAGE: 489741402840.dkr.ecr.us-east-2.amazonaws.com/2-tier-deployment
-  S3_BUCKET: s3://489741402840-devops-scripts 
+  S3_BUCKET: s3://489741402840-devops-scripts
 
 jobs:
   build-and-deploy:
@@ -55,9 +55,28 @@ jobs:
               "mkdir -p /home/ubuntu/app",
               "aws s3 cp ${{ env.S3_BUCKET }}/docker-compose.yml /home/ubuntu/app/docker-compose.yml",
               "docker pull ${{ env.IMAGE }}:${{ env.VERSION }}",
-              "docker stop simplebank 2>/dev/null ⠺⠵⠞⠺⠵⠞⠟⠟⠺⠞⠞⠵⠟⠵⠵⠵⠺⠵⠺⠺⠺⠞⠵⠵⠞⠵⠞⠟⠺⠺⠵⠞⠞⠞⠺⠞⠺⠺⠞⠟⠵⠞⠟⠟⠟⠞⠵⠵⠺⠞⠺⠞⠵⠺⠺⠺ true",
+              "docker stop simplebank 2>/dev/null || true",
+              "docker rm simplebank 2>/dev/null || true",
               "cd /home/ubuntu/app && IMAGE_TAG=${{ env.VERSION }} docker compose up -d",
-              "docker ps --filter name=simplebank --format {{.Status}} | grep -q Up && echo CONTAINER_RUNNING ⠵⠵⠺⠞⠟⠺⠟⠺⠺⠞⠵⠟⠺⠞⠟⠟⠵⠞⠺⠺⠟⠵⠟⠵⠟⠞⠺⠞⠞⠟⠵⠺⠟⠵⠞⠵⠞⠞⠞⠟⠵⠵⠺⠵⠵⠟⠟⠞⠺⠺⠵⠺⠵⠺⠟⠞⠵⠟⠟⠟⠟⠞⠞⠟⠟⠞⠞⠞⠺⠺⠞⠞⠵⠵⠺⠺⠟⠺⠞⠟⠵⠺⠞⠞⠟⠵⠞⠞⠞⠟⠟⠺⠺⠺⠵⠵⠟⠟⠵⠺⠵⠵⠞⠟⠟⠟⠟⠞⠺⠟⠟⠵⠟⠟⠞⠵⠟⠞⠺⠞⠺⠞⠟⠵⠵⠵⠺⠞⠺⠺⠞⠞⠵⠺⠺⠞⠞⠺⠵⠞⠞⠵⠞⠺⠺⠵⠺⠵⠵⠺⠞⠟⠟⠺⠵⠟⠞⠟⠞⠟⠺⠞⠟⠵⠟⠞⠵⠟⠵⠵⠺⠺⠵⠞⠞⠟⠺⠞⠟⠞⠟⠟⠟⠞⠵⠵⠵⠺⠞⠵⠵⠞⠺⠵⠺⠟⠵⠟⠞⠵⠵⠟⠵⠵⠞⠞⠟⠟⠞⠺⠺⠟⠵⠺⠵⠞⠺⠵⠞⠟⠵⠞⠺⠟⠟⠵⠞⠺⠺⠵⠞⠵⠟⠞⠵⠵⠵⠞⠞⠞⠟⠞⠞⠺⠵⠟⠺⠵⠺⠵⠵⠞⠵⠵⠟⠺⠟⠵⠞⠟⠵⠵⠺⠵⠵⠟⠵⠵⠟⠟⠟⠵⠺⠺⠞⠟⠺⠺⠞⠺⠟⠟⠟⠺⠺⠟⠟⠵⠟⠞⠟⠟⠟⠺⠞⠺⠟⠺⠵⠵⠟⠟⠺⠵⠺⠵⠺⠵⠵⠟⠵⠞⠞⠺⠵⠺⠵⠵⠵⠟⠵⠵⠵⠺⠵⠺⠺⠵⠟⠟⠵⠺⠞⠟⠟⠟⠞⠞⠺⠞⠟⠟⠵⠟⠞⠺⠞⠟⠺⠵⠺⠵⠵⠟⠞⠺⠞⠞⠟⠞⠞⠞⠺⠵⠟⠞⠺⠺⠺⠟⠟⠞⠵⠺⠵⠞⠵⠵⠞⠞⠟⠵⠵⠺⠺⠺⠟⠞⠺⠟⠟⠺⠺⠺⠺⠞⠟⠞⠞⠵⠟⠞⠵⠵⠺⠟⠺⠵⠺⠺⠺⠵⠟⠞⠞⠟⠞⠞⠟⠺⠟⠟⠺⠵⠺⠟⠟⠞⠞⠟⠺⠞⠵⠺⠞⠟⠺⠵⠵⠺⠟⠟⠵⠞⠵⠞⠺⠺⠞⠞⠺⠞⠺⠵⠺⠵⠞⠞⠞⠞⠵⠵⠟⠟⠵⠟⠵⠟⠺⠟⠺⠟⠵⠟⠟⠺⠵⠟⠺⠟⠟⠵⠵⠺⠞⠵⠞⠵⠺⠞⠟⠞⠺⠞⠺⠟⠵⠵⠺⠺⠞⠵⠺⠟⠟⠟⠟⠵⠵⠵⠞⠵⠟⠟⠺⠞⠞⠵⠟⠞⠞⠵⠵⠵⠵⠞⠺⠞⠟⠟⠵⠞⠵⠞⠵⠞⠵⠞⠵⠺⠞⠺⠺⠵⠺⠵⠺⠺⠞⠞⠵⠟⠵⠺⠞⠟⠟⠵⠺⠞⠟⠺⠞⠵⠞⠞⠵⠺⠺⠞⠟⠵⠞⠺⠞⠺⠺⠟⠟⠺⠵⠺⠵⠵⠟⠞⠟⠟⠺⠞⠞⠺⠞⠟⠵⠺⠺⠵⠞⠺⠺⠵⠟⠞⠵⠞⠟⠺⠺⠟⠞⠟⠟⠞⠺⠟⠺⠺⠞⠟⠵⠺⠟⠞⠺⠞⠞⠺⠺⠺⠞⠺⠞⠟⠟⠟⠟⠵⠵⠞⠵⠟⠺⠵⠵⠟⠞⠞⠟⠞⠞⠺⠵⠟⠵ break
+              "docker ps --filter name=simplebank --format {{.Status}} | grep -q Up && echo CONTAINER_RUNNING || (echo CONTAINER_FAILED && exit 1)"
+            ]}' \
+            --query 'Command.CommandId' \
+            --output text \
+            --region ${{ env.REGION }})
+
+          echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
+
+      - name: Verify Deployment
+        run: |
+          for i in {1..10}; do
+            STATUS=$(aws ssm list-command-invocations \
+              --command-id "${{ steps.deploy.outputs.cmd_id }}" \
+              --query "CommandInvocations[*].Status" \
+              --output text \
+              --region ${{ env.REGION }})
+
+            echo "[$i] Status: $STATUS"
+            echo "$STATUS" | grep -q "InProgress\|Pending" && sleep 10 || break
           done
 
           echo "============ DEPLOY RESULTS ============"
