@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   simplebank:
     image: 489741402840.dkr.ecr.us-east-2.amazonaws.com/2-tier-deployment:${IMAGE_TAG:-latest}

@@ -1,7 +1,7 @@
 name: Smoke Testing For Infra and Networking
 
 on:
-  workflow_dispatch:
+  workflow_call:
 
 permissions:
   id-token: write
