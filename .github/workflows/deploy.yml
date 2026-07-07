@@ -1,4 +1,4 @@
-name : Application Deploying On AWS
+name: Application Deploying On AWS
 
 on:
   workflow_call:
@@ -9,13 +9,15 @@ permissions:
 
 env:
   VERSION: v1
-  IMAGE: 489741402840.dkr.ecr.us-east-2.amazonaws.com/2-tier-deployment
   REGION: us-east-2
-  S3_BUCKET: s3://489741402840-devops-scripts
+  ECR: 489741402840.dkr.ecr.us-east-2.amazonaws.com
+  IMAGE: 489741402840.dkr.ecr.us-east-2.amazonaws.com/2-tier-deployment
+  S3_BUCKET: s3://489741402840-devops-scripts 
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,17 +31,71 @@ jobs:
       - name: Login to ECR
         run: |
           aws ecr get-login-password --region ${{ env.REGION }} | \
-          docker login --username AWS --password-stdin \
-          489741402840.dkr.ecr.${{ env.REGION }}.amazonaws.com
-          echo "Login Successfull to ECR ✅"
+          docker login --username AWS --password-stdin ${{ env.ECR }}
 
       - name: Build and Push image
         run: |
-          docker build -t ${{env.IMAGE}}:${{env.VERSION}} .
-          docker push ${{env.IMAGE}}:${{env.VERSION}}
-          echo "Image Pushed : ${{env.VERSION}} ✅"
+          docker build -t ${{ env.IMAGE }}:${{ env.VERSION }} .
+          docker push ${{ env.IMAGE }}:${{ env.VERSION }}
 
       - name: Upload Docker-Compose to S3
         run: |
           aws s3 cp docker-compose.yml ${{ env.S3_BUCKET }}/docker-compose.yml --region ${{ env.REGION }}
-          echo "Docker compose Uploaded ✅"
+
+      - name: Deploy via SSM
+        id: deploy
+        run: |
+          CMD_ID=$(aws ssm send-command \
+            --targets "Key=tag:App,Values=flask" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy ${{ env.VERSION }} by ${{ github.actor }}" \
+            --parameters '{
+              "commands":[
+                "set -e",
+                "aws ecr get-login-password --region ${{ env.REGION }} | docker login --username AWS --password-stdin ${{ env.ECR }}",
+                "mkdir -p /home/ubuntu/app",
+                "aws s3 cp ${{ env.S3_BUCKET }}/docker-compose.yml /home/ubuntu/app/docker-compose.yml",
+                "docker pull ${{ env.IMAGE }}:${{ env.VERSION }}",
+                "docker stop simplebank || true",
+                "docker rm simplebank || true",
+                "cd /home/ubuntu/app && IMAGE_TAG=${{ env.VERSION }} docker compose up -d"
+              ]
+            }' \
+            --query "Command.CommandId" \
+            --output text)
+
+          echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
+
+      - name: Wait for deployment
+        run: |
+          while true; do
+            STATUS=$(aws ssm list-command-invocations \
+              --command-id "${{ steps.deploy.outputs.cmd_id }}" \
+              --details \
+              --region ${{ env.REGION }} \
+              --query "CommandInvocations[0].Status" \
+              --output text)
+
+            echo "Current Status: $STATUS"
+
+            if [[ "$STATUS" == "Success" ]]; then
+              break
+            elif [[ "$STATUS" == "Failed" || "$STATUS" == "Cancelled" || "$STATUS" == "TimedOut" ]]; then
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+      - name: Show Deployment Result
+        run: |
+          aws ssm list-command-invocations \
+            --command-id "${{ steps.deploy.outputs.cmd_id }}" \
+            --details \
+            --region ${{ env.REGION }} \
+            --query "CommandInvocations[*].[InstanceId,Status]" \
+            --output table
+
+      - name: Deployment Successful
+        run: |
+          echo "Deployment completed successfully ✅"
