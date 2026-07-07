@@ -1,4 +1,4 @@
-name: Application Deploying On AWS
+name : Application Deploying On AWS
 
 on:
   workflow_call:
@@ -23,7 +23,7 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::489741402840:role/github-action-deploy-role
+          role-to-assume: arn:aws:iam::489741402840:role/GitHub-OIDC-Role
           aws-region: ${{ env.REGION }}
 
       - name: Login to ECR
@@ -35,9 +35,9 @@ jobs:
 
       - name: Build and Push image
         run: |
-          docker build -t ${{ env.IMAGE }}:${{ env.VERSION }} .
-          docker push ${{ env.IMAGE }}:${{ env.VERSION }}
-          echo "Image Pushed : ${{ env.VERSION }} ✅"
+          docker build -t ${{env.IMAGE}}:${{env.VERSION}} .
+          docker push ${{env.IMAGE}}:${{env.VERSION}}
+          echo "Image Pushed : ${{env.VERSION}} ✅"
 
       - name: Upload Docker-Compose to S3
         run: |
