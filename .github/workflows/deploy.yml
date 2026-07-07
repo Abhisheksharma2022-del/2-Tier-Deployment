@@ -37,12 +37,8 @@ jobs:
 
       - name: Build and Push image
         run: |
-          docker build \
-          -t ${{env.IMAGE}}:${{env.VERSION}} \
-          
-
+          docker build -t ${{env.IMAGE}}:${{env.VERSION}} \
           docker push ${{env.IMAGE}}:${{env.VERSION}}
-          
           echo "Image Pushed : ${{env.VERSION}} ✅"
       
 
