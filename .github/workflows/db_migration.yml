@@ -10,6 +10,7 @@ permissions:
 jobs:
   init-db:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,37 +22,60 @@ jobs:
           role-to-assume: arn:aws:iam::489741402840:role/GitHub-OIDC-Role
           aws-region: us-east-2
 
-      - name: Upload file on S3
+      - name: Upload files to S3
         run: |
           aws s3 mb s3://489741402840-devops-scripts --region us-east-2 2>/dev/null || true
-          aws s3 cp init.sql s3://489741402840-devops-scripts/init.sql --region us-east-2
-          aws s3 cp init.py s3://489741402840-devops-scripts/init.py --region us-east-2
-          echo "✅ Files Uploaded to bucket.."
 
-      - name: Initializing Database on RDS using Ec2
+          aws s3 cp init.py s3://489741402840-devops-scripts/init.py --region us-east-2
+          aws s3 cp init.sql s3://489741402840-devops-scripts/init.sql --region us-east-2
+
+          echo "✅ init.py and init.sql uploaded successfully."
+
+      - name: Initialize Database using EC2
         id: init
         run: |
           CMD_ID=$(aws ssm send-command \
             --targets "Key=tag:App,Values=flask" \
             --document-name "AWS-RunShellScript" \
-            --parameters '{"commands":[
-              "aws s3 cp s3://489741402840-devops-scripts/init.py /tmp/init.py",
-              "python3 /tmp/init.py || exit 1",
-              "rm /tmp/init.py"
-            ]}' \
-            --query 'Command.CommandId' \
+            --parameters '{
+              "commands":[
+                "set -e",
+                "which aws",
+                "aws --version",
+                "aws s3 cp s3://489741402840-devops-scripts/init.py /tmp/init.py",
+                "aws s3 cp s3://489741402840-devops-scripts/init.sql /tmp/init.sql",
+                "python3 /tmp/init.py",
+                "rm -f /tmp/init.py",
+                "rm -f /tmp/init.sql"
+              ]
+            }' \
+            --query "Command.CommandId" \
             --output text \
             --region us-east-2)
+
           echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
+
+      - name: Wait for Database Initialization
+        run: |
+          for i in {1..12}; do
+            STATUS=$(aws ssm list-command-invocations \
+              --command-id "${{ steps.init.outputs.cmd_id }}" \
+              --query "CommandInvocations[*].Status" \
+              --output text \
+              --region us-east-2)
+
+            echo "[$i] Status: $STATUS"
+
+            echo "$STATUS" | grep -q "InProgress\|Pending" && sleep 10 || break
+          done
 
       - name: Show Results
         run: |
-          sleep 30
-
           aws ssm list-command-invocations \
             --command-id "${{ steps.init.outputs.cmd_id }}" \
             --details \
             --region us-east-2 \
+            --query "CommandInvocations[*].[InstanceId,Status,CommandPlugins[0].Output]" \
             --output text
 
           FAILED=$(aws ssm list-command-invocations \
@@ -60,8 +84,9 @@ jobs:
             --output text \
             --region us-east-2)
 
-          [ "$FAILED" -gt 0 ] && \
-            echo "::error::Database Creation Failed $FAILED instance(s)!" && \
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::Database Initialization Failed on $FAILED instance(s)!"
             exit 1
+          fi
 
-          echo "✅ Database Created Successfully"
+          echo "✅ Database Initialized Successfully"
