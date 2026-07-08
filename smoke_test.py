@@ -3,7 +3,7 @@ import os
 import sys
 import pymysql
 
-client = boto3.client("ssm", region_name="us-east-1")
+client = boto3.client("ssm", region_name="us-east-2")
 
 params = {
     os.path.basename(p["Name"]): p["Value"]
