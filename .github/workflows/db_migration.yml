@@ -1,6 +1,10 @@
-name: Intializing Database
+name: Main Pipeline for Orchestrate
 
 on:
+  push:
+    branches:
+      - main
+
   workflow_dispatch:
 
 permissions:
@@ -8,85 +12,33 @@ permissions:
   contents: read
 
 jobs:
-  init-db:
-    runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: Abhisheksharma2022-del/2-Tier-Deployment
-          ref: main
+  verify_connection:
+    name: Verify AWS Connection
+    uses: ./.github/workflows/test_connection.yml
 
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::489741402840:role/GitHub-OIDC-Role
-          aws-region: us-east-2
+    permissions:
+      id-token: write
+      contents: read
 
-      - name: Upload files to S3
-        run: |
-          aws s3 mb s3://489741402840-devops-scripts --region us-east-2 2>/dev/null || true
+  smoke_testing:
+    name: Smoke Testing
 
-          aws s3 cp init.py s3://489741402840-devops-scripts/init.py --region us-east-2
-          aws s3 cp init.sql s3://489741402840-devops-scripts/init.sql --region us-east-2
+    needs: verify_connection
 
-          echo "✅ init.py and init.sql uploaded successfully."
+    uses: ./.github/workflows/smoke_test.yml
 
-      - name: Initialize Database using EC2
-        id: init
-        run: |
-          CMD_ID=$(aws ssm send-command \
-            --targets "Key=tag:App,Values=flask" \
-            --document-name "AWS-RunShellScript" \
-            --parameters '{
-              "commands":[
-                "set -e",
-                "which aws",
-                "aws --version",
-                "aws s3 cp s3://489741402840-devops-scripts/init.py /tmp/init.py",
-                "aws s3 cp s3://489741402840-devops-scripts/init.sql /tmp/init.sql",
-                "python3 /tmp/init.py",
-                "rm -f /tmp/init.py",
-                "rm -f /tmp/init.sql"
-              ]
-            }' \
-            --query "Command.CommandId" \
-            --output text \
-            --region us-east-2)
+    permissions:
+      id-token: write
+      contents: read
 
-          echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
+  deploying:
+    name: Deploy Application
 
-      - name: Wait for Database Initialization
-        run: |
-          for i in {1..12}; do
-            STATUS=$(aws ssm list-command-invocations \
-              --command-id "${{ steps.init.outputs.cmd_id }}" \
-              --query "CommandInvocations[*].Status" \
-              --output text \
-              --region us-east-2)
+    needs: smoke_testing
 
-            echo "[$i] Status: $STATUS"
+    uses: ./.github/workflows/deploy.yml
 
-            echo "$STATUS" | grep -q "InProgress\|Pending" && sleep 10 || break
-          done
-
-      - name: Show Results
-        run: |
-          aws ssm list-command-invocations \
-            --command-id "${{ steps.init.outputs.cmd_id }}" \
-            --details \
-            --region us-east-2 \
-            --query "CommandInvocations[*].[InstanceId,Status,CommandPlugins[0].Output]" \
-            --output text
-
-          FAILED=$(aws ssm list-command-invocations \
-            --command-id "${{ steps.init.outputs.cmd_id }}" \
-            --query "length(CommandInvocations[?Status=='Failed'])" \
-            --output text \
-            --region us-east-2)
-
-          if [ "$FAILED" -gt 0 ]; then
-            echo "::error::Database Initialization Failed on $FAILED instance(s)!"
-            exit 1
-          fi
-
-          echo "✅ Database Initialized Successfully"
+    permissions:
+      id-token: write
+      contents: read

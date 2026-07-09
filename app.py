@@ -1,138 +1,242 @@
 import os
 import random
 import boto3
-from flask import Flask, render_template, request, redirect, session
 import pymysql
+from flask import Flask, render_template, request, redirect, session
 
-
+# -------------------------------
+# Load SSM Parameters (Production)
+# -------------------------------
 if os.getenv("FLASK_ENV") == "production":
-    client=boto3.client("ssm",region_name="us-east-1")
-    for p in client.get_parameters_by_path(
-        Path="/application/banking",
-        WithDecryption=True
-    )["Parameters"]:
-        os.environ.setdefault(os.path.basename(p["Name"]),p["Value"])
+    client = boto3.client("ssm", region_name="us-east-2")
 
+    response = client.get_parameters_by_path(
+        Path="/application/banking",
+        Recursive=False,
+        WithDecryption=True
+    )
+
+    for parameter in response["Parameters"]:
+        os.environ.setdefault(
+            os.path.basename(parameter["Name"]),
+            parameter["Value"]
+        )
+
+# -------------------------------
+# Flask App
+# -------------------------------
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "fallbacksecret")
 
 
+# -------------------------------
+# Database Connection
+# -------------------------------
 def get_db_connection():
     return pymysql.connect(
-        host=os.getenv('DB_HOST'),
-        port=int(os.getenv('DB_PORT',3306)),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        db=os.getenv('DB_NAME'),
+        host=os.getenv("DB_HOST"),
+        port=int(os.getenv("DB_PORT", 3306)),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME"),
         cursorclass=pymysql.cursors.DictCursor,
         connect_timeout=10,
+        autocommit=False
     )
 
 
+# -------------------------------
+# Generate Account Number
+# -------------------------------
 def generate_account_number():
-    return str(random.randint(10**9, 10**10 - 1))
+    return str(random.randint(1000000000, 9999999999))
 
 
-# ─── Home ───────────────────────────────────────────────
-@app.route('/health')
+# -------------------------------
+# Health Check
+# -------------------------------
+@app.route("/health")
 def health():
-    return True
+    return {
+        "status": "healthy"
+    }, 200
 
-@app.route('/')
+
+# -------------------------------
+# Home
+# -------------------------------
+@app.route("/")
 def home():
-    return render_template('home.html')
+    return render_template("home.html")
 
 
-# ─── Register ───────────────────────────────────────────
-@app.route('/register', methods=['GET', 'POST'])
+# -------------------------------
+# Register
+# -------------------------------
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        password = request.form["password"]
 
         conn = get_db_connection()
-        cur  = conn.cursor()
-        cur.execute("SELECT id FROM users WHERE username = %s", (username,))
-        if cur.fetchone():
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT id FROM users WHERE username=%s",
+            (username,)
+        )
+
+        if cursor.fetchone():
+            cursor.close()
             conn.close()
-            return render_template('register.html', error="Username already taken. Please choose another.")
 
-        cur.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
+            return render_template(
+                "register.html",
+                error="Username already taken."
+            )
+
+        cursor.execute(
+            "INSERT INTO users(username,password) VALUES(%s,%s)",
+            (username, password)
+        )
+
         conn.commit()
+
+        cursor.close()
         conn.close()
-        return redirect('/login')
 
-    return render_template('register.html')
+        return redirect("/login")
+
+    return render_template("register.html")
 
 
-# ─── Login ──────────────────────────────────────────────
-@app.route('/login', methods=['GET', 'POST'])
+# -------------------------------
+# Login
+# -------------------------------
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        password = request.form["password"]
 
         conn = get_db_connection()
-        cur  = conn.cursor()
-        cur.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
-        user = cur.fetchone()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT * FROM users WHERE username=%s AND password=%s",
+            (username, password)
+        )
+
+        user = cursor.fetchone()
+
+        cursor.close()
         conn.close()
 
         if user:
-            session['username'] = username
-            return redirect('/dashboard')
-        return render_template('login.html', error="Invalid username or password.")
+            session["username"] = username
+            return redirect("/dashboard")
 
-    return render_template('login.html')
+        return render_template(
+            "login.html",
+            error="Invalid username or password."
+        )
+
+    return render_template("login.html")
 
 
-# ─── Logout ─────────────────────────────────────────────
-@app.route('/logout')
+# -------------------------------
+# Logout
+# -------------------------------
+@app.route("/logout")
 def logout():
-    session.pop('username', None)
-    return redirect('/login')
+
+    session.pop("username", None)
+
+    return redirect("/login")
 
 
-# ─── Open Account ───────────────────────────────────────
-@app.route('/open-account', methods=['GET', 'POST'])
+# -------------------------------
+# Open Account
+# -------------------------------
+@app.route("/open-account", methods=["GET", "POST"])
 def open_account():
-    if 'username' not in session:
-        return redirect('/login')
 
-    if request.method == 'POST':
-        name       = request.form['name']
-        email      = request.form['email']
-        mobile     = request.form['mobile']
-        balance    = request.form['balance']
+    if "username" not in session:
+        return redirect("/login")
+
+    if request.method == "POST":
+
+        name = request.form["name"]
+        email = request.form["email"]
+        mobile = request.form["mobile"]
+        balance = request.form["balance"]
+
         acc_number = generate_account_number()
 
         conn = get_db_connection()
-        cur  = conn.cursor()
-        cur.execute("""
-            INSERT INTO accounts (name, email, mobile, acc_number, balance)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (name, email, mobile, acc_number, balance))
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            INSERT INTO accounts
+            (name,email,mobile,acc_number,balance)
+            VALUES(%s,%s,%s,%s,%s)
+            """,
+            (
+                name,
+                email,
+                mobile,
+                acc_number,
+                balance
+            )
+        )
+
         conn.commit()
+
+        cursor.close()
         conn.close()
-        return redirect('/dashboard')
 
-    return render_template('open_account.html')
+        return redirect("/dashboard")
+
+    return render_template("open_account.html")
 
 
-# ─── Dashboard ──────────────────────────────────────────
-@app.route('/dashboard')
+# -------------------------------
+# Dashboard
+# -------------------------------
+@app.route("/dashboard")
 def dashboard():
-    if 'username' not in session:
-        return redirect('/login')
+
+    if "username" not in session:
+        return redirect("/login")
 
     conn = get_db_connection()
-    cur  = conn.cursor()
-    cur.execute("SELECT * FROM accounts")
-    accounts = cur.fetchall()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM accounts")
+
+    accounts = cursor.fetchall()
+
+    cursor.close()
     conn.close()
-    return render_template('dashboard.html', accounts=accounts)
+
+    return render_template(
+        "dashboard.html",
+        accounts=accounts
+    )
 
 
-# ─── Run ────────────────────────────────────────────────
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+# -------------------------------
+# Run
+# -------------------------------
+if __name__ == "__main__":
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )
